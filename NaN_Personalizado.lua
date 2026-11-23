@@ -1,16 +1,16 @@
-local C={FLING_DURATION=1.5,TOUCH_DISTANCE=3,TOUCH_COOLDOWN=3,SIT_RADIUS=10,WIDTH=520,HEIGHT=460,BG=Color3.fromRGB(2,7,6),PANEL=Color3.fromRGB(7,19,15),TITLE=Color3.fromRGB(4,12,10),STROKE=Color3.fromRGB(27,83,61),WHITE=Color3.fromRGB(231,255,242),GREY=Color3.fromRGB(153,194,171),DIM=Color3.fromRGB(14,48,36),GREEN=Color3.fromRGB(0,255,136),RED=Color3.fromRGB(238,75,101),PURPLE=Color3.fromRGB(0,255,136),CYAN=Color3.fromRGB(85,255,193)}
+local C={FLING_DURATION=1.5,SIT_RADIUS=10,WIDTH=520,HEIGHT=360,BG=Color3.fromRGB(2,7,6),PANEL=Color3.fromRGB(7,19,15),TITLE=Color3.fromRGB(4,12,10),STROKE=Color3.fromRGB(27,83,61),WHITE=Color3.fromRGB(231,255,242),GREY=Color3.fromRGB(153,194,171),DIM=Color3.fromRGB(14,48,36),GREEN=Color3.fromRGB(0,255,136),RED=Color3.fromRGB(238,75,101),PURPLE=Color3.fromRGB(0,255,136),CYAN=Color3.fromRGB(85,255,193)}
 local function _0x2d(a)local b={}for c=1,#a do b[c]=string.char(bit32.bxor(a[c],43))end return table.concat(b)end
 local _0x91=_0x2d({101,74,101,109,71,66,69,76,108,126,98})
 local _0x92=_0x2d({101,74,101,11,123,78,89,88,68,69,74,71,66,81,74,79,68,11,73,82,11,123,88,82,72,67,68,68})
 local _0x93=_0x2d({112,101,74,101,11,123,78,89,88,68,69,74,71,66,81,74,79,68,118,11,104,66,69,95,94,89,74,11,0,11,121,68,95,74,72,66,232,152,69,11,0,11,104,71,232,138,88,66,72,68,11,0,11,110,77,78,72,95,68,11,88,78,69,95,74,79,68,11,0,11,104,68,69,95,74,79,68,89,11,79,78,11,89,78,66,69,66,72,66,68,88})
 local P=game:GetService("Players")local R=game:GetService("RunService")local T=game:GetService("TweenService")local U=game:GetService("UserInputService")local W=game:GetService("Workspace")
 local pl=P.LocalPlayer local mob=U.TouchEnabled and not U.KeyboardEnabled
-local AF={}local tE=false local tC={}local mC={}local tCd={}local mz=false
+local AF={}local mz=false
 local sE=false local sC=nil local mt={}
 local cE=false local cToken=0 local cCleaning=false
 local skipTargetVersion=0
 local closing=false
-local dragInputConn,keyInputConn,characterAddedConn
+local dragInputConn,keyInputConn
 local modo="CINTURA"
 local cinturaDepth=12
 local followConn=nil
@@ -29,7 +29,6 @@ local function mc(r,p)local c=Instance.new("UICorner")c.CornerRadius=UDim.new(0,
 local function ms(col,t,p)local s=Instance.new("UIStroke")s.Color=col or C.STROKE s.Thickness=t or 1 s.Parent=p return s end
 local function mg(a,b,r,p)local g=Instance.new("UIGradient")g.Color=ColorSequence.new(a,b)g.Rotation=r or 90 g.Parent=p return g end
 local mf=Instance.new("Frame")mf.Size=UDim2.new(0,C.WIDTH,0,C.HEIGHT)mf.Position=UDim2.new(0.5,-C.WIDTH/2,-0.5,0)mf.BackgroundColor3=C.BG mf.BorderSizePixel=0 mf.Active=true mf.Parent=sg mc(10,mf)ms(Color3.fromRGB(18,112,75),1,mf)mg(Color3.fromRGB(4,14,11),Color3.fromRGB(1,5,4),90,mf)
-for scan=1,22 do local line=Instance.new("Frame")line.Size=UDim2.new(1,-4,0,1)line.Position=UDim2.new(0,2,0,scan*20)line.BackgroundColor3=Color3.fromRGB(25,94,67)line.BackgroundTransparency=.9 line.BorderSizePixel=0 line.ZIndex=0 line.Parent=mf end
 local matrixLayer=Instance.new("Frame")matrixLayer.Size=UDim2.new(1,0,1,-56)matrixLayer.Position=UDim2.new(0,0,0,56)matrixLayer.BackgroundTransparency=1 matrixLayer.ClipsDescendants=true matrixLayer.ZIndex=0 matrixLayer.Parent=mf
 for column=1,16 do
  local stream=Instance.new("TextLabel")stream.Size=UDim2.new(0,24,0,260)stream.Position=UDim2.new(0,(column-1)*34,-.5-math.random(),0)stream.BackgroundTransparency=1 stream.Text="0\n1\n0\n0\n1\n1\n0\n1\n0\n1\n1\n0"stream.TextColor3=Color3.fromRGB(0,180,92)stream.TextTransparency=.78 stream.TextSize=11 stream.Font=Enum.Font.RobotoMono stream.TextYAlignment=Enum.TextYAlignment.Top stream.ZIndex=0 stream.Parent=matrixLayer
@@ -498,8 +497,7 @@ for index,option in ipairs(perspectiveOptions)do
   end
  end)
 end
-ct.CanvasSize=UDim2.new(0,0,0,560)
-local tT,sT=mkT("FLING POR CONTACTO",156,false)
+ct.CanvasSize=UDim2.new(0,0,0,190)
 local sTog,sS=mkT("SIT KILL",196,false)sTog.Text="SIT KILL: INACTIVO"
 local skipB=Instance.new("TextButton")skipB.Size=UDim2.new(1,0,0,36)skipB.Position=UDim2.new(0,0,0,278)skipB.BackgroundColor3=Color3.fromRGB(25,57,84)skipB.Text="SIGUIENTE OBJETIVO   →"skipB.TextColor3=Color3.fromRGB(153,220,255)skipB.TextSize=11 skipB.Font=Enum.Font.GothamBold skipB.BorderSizePixel=0 skipB.Parent=ct mc(9,skipB)ms(Color3.fromRGB(44,105,144),1,skipB)
 local stopB=Instance.new("TextButton")stopB.Size=UDim2.new(1,0,0,36)stopB.Position=UDim2.new(0,0,0,320)stopB.BackgroundColor3=Color3.fromRGB(69,27,40)stopB.Text="■  DETENER TODO"stopB.TextColor3=Color3.fromRGB(255,157,171)stopB.TextSize=11 stopB.Font=Enum.Font.GothamBold stopB.BorderSizePixel=0 stopB.Parent=ct mc(9,stopB)ms(Color3.fromRGB(127,49,68),1,stopB)
@@ -536,7 +534,7 @@ local sl=Instance.new("TextLabel")sl.Size=UDim2.new(1,0,0,30)sl.Position=UDim2.n
 local rail=Instance.new("Frame")rail.Size=UDim2.new(1,-24,0,80)rail.Position=UDim2.new(0,12,0,66)rail.BackgroundColor3=Color3.fromRGB(3,14,10)rail.BorderSizePixel=0 rail.Parent=mf mc(8,rail)ms(Color3.fromRGB(20,103,70),1,rail)
 local railAccent=Instance.new("Frame")railAccent.Size=UDim2.new(0,4,1,-14)railAccent.Position=UDim2.new(0,0,0,7)railAccent.BackgroundColor3=C.CYAN railAccent.BorderSizePixel=0 railAccent.Parent=rail mc(2,railAccent)mg(C.CYAN,C.PURPLE,90,railAccent)
 local railTitle=Instance.new("TextLabel")railTitle.Size=UDim2.new(0,180,0,18)railTitle.Position=UDim2.new(0,12,0,4)railTitle.BackgroundTransparency=1 railTitle.Text="CONTROLES"railTitle.TextColor3=C.GREY railTitle.TextSize=11 railTitle.Font=Enum.Font.RobotoMono railTitle.TextXAlignment=Enum.TextXAlignment.Left railTitle.Parent=rail
-ct.Size=UDim2.new(1,-24,1,-166)ct.Position=UDim2.new(0,12,0,154)ct.CanvasSize=UDim2.new(0,0,0,280)ct.ScrollBarThickness=3
+ct.Size=UDim2.new(1,-24,1,-166)ct.Position=UDim2.new(0,12,0,154)ct.CanvasSize=UDim2.new(0,0,0,190)ct.ScrollBarThickness=3
 il.Text="CONFIGURACIÓN"
 flB.Parent=rail flB.Size=UDim2.new(0,154,0,42)flB.Position=UDim2.new(0,10,0,29)flB.TextWrapped=true flB.TextSize=12
 skipB.Parent=rail skipB.Size=UDim2.new(0,148,0,42)skipB.Position=UDim2.new(0,174,0,29)skipB.Text="SIGUIENTE"skipB.TextColor3=C.CYAN skipB.BackgroundColor3=Color3.fromRGB(5,33,27)skipB.TextWrapped=true skipB.TextSize=12
@@ -556,14 +554,13 @@ updateCommandLayout=function()
  end
 end
 updateCommandLayout()
-resetFrame.Parent=ct resetFrame.Size=UDim2.new(.48,0,0,30)resetFrame.Position=UDim2.new(0,0,0,206)
+resetFrame.Parent=ct resetFrame.Size=UDim2.new(.48,0,0,30)resetFrame.Position=UDim2.new(0,0,0,152)
 resetLabel.Size=UDim2.new(1,-12,1,0)resetLabel.Position=UDim2.new(0,6,0,0)resetLabel.TextSize=10 resetLabel.TextWrapped=false
-sl.Parent=ct sl.Size=UDim2.new(.5,-4,0,30)sl.Position=UDim2.new(.5,4,0,206)sl.TextSize=10 sl.TextWrapped=false
+sl.Parent=ct sl.Size=UDim2.new(.5,-4,0,30)sl.Position=UDim2.new(.5,4,0,152)sl.TextSize=10 sl.TextWrapped=false
 modoBtn.Size=UDim2.new(.49,-4,0,34)modoBtn.Position=UDim2.new(0,0,0,70)
-tT.Size=UDim2.new(.51,-4,0,34)tT.Position=UDim2.new(.49,4,0,70)
-sTog.Size=UDim2.new(1,0,0,34)sTog.Position=UDim2.new(0,0,0,110)
-balloonFrame.Size=UDim2.new(.49,-4,0,36)balloonFrame.Position=UDim2.new(0,0,0,150)
-perspectiveFrame.Size=UDim2.new(.51,-4,0,36)perspectiveFrame.Position=UDim2.new(.49,4,0,150)
+sTog.Size=UDim2.new(.51,-4,0,34)sTog.Position=UDim2.new(.49,4,0,70)
+balloonFrame.Size=UDim2.new(.49,-4,0,36)balloonFrame.Position=UDim2.new(0,0,0,110)
+perspectiveFrame.Size=UDim2.new(.51,-4,0,36)perspectiveFrame.Position=UDim2.new(.49,4,0,110)
 for _,node in ipairs(mf:GetDescendants())do
  if node:IsA("TextLabel")or node:IsA("TextButton")or node:IsA("TextBox")then
   if node:IsA("TextButton")or node:IsA("TextBox")then node.Font=Enum.Font.GothamBold else node.Font=Enum.Font.RobotoMono end
@@ -997,14 +994,13 @@ local _0x4e=(function(a)local b={}for c=1,#a do b[c]=_0x2d(a[c])end return b end
 })
 local function _0x56(a,b,c)return Vector3.new(a,b,c)end
 local function _0x4f(a,b,c)pcall(function()sethiddenproperty(a,b,c)end)end
-local function fling(tp,fromTouch,runToken)
+local function fling(tp,runToken)
 if not tp or tp==pl or tp~=selectedTarget()then return end
 if AF[tp]then return end
-if fromTouch and tCd[tp]then if tick()-tCd[tp]<C.TOUCH_COOLDOWN then return end end
 local ch=gc()local trc=tp[_0x30[7]]if not ch or not trc then return end
 local hrp=_0x31(ch,1,_0x4e[7])local hum=_0x31(ch,2,_0x4e[8])local thrp=_0x31(trc,1,_0x4e[7])local thum=_0x31(trc,2,_0x4e[8])
 if not hrp or not hum or not thrp then return end
-AF[tp]=true if fromTouch then tCd[tp]=tick()end
+AF[tp]=true
 local savedPos=hrp[_0x30[10]]
 ss("fling "..tp.Name.." ["..modo.."]")nt("NaN "..modo,tp.Name,2)
 hum[_0x30[11]]=true
@@ -1020,7 +1016,7 @@ cn=R.Heartbeat:Connect(function()
 steps=steps+1
 local elapsed=tick()-st
 local cycleDone=elapsed>=C.FLING_DURATION
-if closing or cycleDone or(fromTouch and not tE)or not ch[_0x30[8]]or not trc[_0x30[8]]or tp~=selectedTarget()or tp[_0x30[7]]~=trc or(runToken and(not cE or runToken~=cToken))then
+if closing or cycleDone or not ch[_0x30[8]]or not trc[_0x30[8]]or tp~=selectedTarget()or tp[_0x30[7]]~=trc or(runToken and(not cE or runToken~=cToken))then
 cn:Disconnect()AF[tp]=nil
 if cycleDone and modo==_0x4e[1] and runToken and cE and runToken==cToken and not closing and tp==selectedTarget() and trc[_0x30[8]]and ch[_0x30[8]]then
  _0x4f(hrp,_0x4e[5],nil)
@@ -1084,18 +1080,6 @@ mf.Position=UDim2.new(0.5,-C.WIDTH/2,-0.5,0)
 T:Create(mf,TweenInfo.new(0.4,Enum.EasingStyle.Back,Enum.EasingDirection.Out),{Position=UDim2.new(0.5,-C.WIDTH/2,0.5,-C.HEIGHT/2)}):Play()
 mB.Visible=false
 end)
-local function clrT()for _,c in pairs(tC)do if c then c:Disconnect()end end for _,c in pairs(mC)do if c then c:Disconnect()end end tC={}mC={}end
-local function setupT()
-clrT()if not tE then return end
-local ch=gc()if not ch then return end
-local mc2=R.Heartbeat:Connect(function()
-if not tE then return end
-local h=grp()if not h then return end
-for _,plr in ipairs(P:GetPlayers())do if plr~=pl then local tc=plr.Character if tc then local th=tc:FindFirstChild("HumanoidRootPart")if th and(h.Position-th.Position).Magnitude<C.TOUCH_DISTANCE then fling(plr,true)end end end end
-end)
-table.insert(mC,mc2)
-for _,pt in ipairs(ch:GetChildren())do if pt:IsA("BasePart")and pt.Name~="HumanoidRootPart"then local c=pt.Touched:Connect(function(h)if not tE then return end local tp=P:GetPlayerFromCharacter(h.Parent)if tp and tp~=pl then fling(tp,true)end end)table.insert(tC,c)end end
-ss("contacto activo")end
 local function setContinuousState(enabled)
 cE=enabled
 flB.Text=enabled and "DESACTIVAR"or"ACTIVAR"
@@ -1111,7 +1095,6 @@ if cE then
  activeTarget=nil
 _0xc2()
 stopFollow()
-tE=false clrT()sT(false)tT.Text="FLING POR CONTACTO   INACTIVO"
 if sE then stopSit()end sS(false)sTog.Text="SIT KILL: INACTIVO"
 ss("parando...")
 nt("NaN FLING","parando ciclo",2)
@@ -1199,7 +1182,7 @@ task.spawn(function()
   if followActive then
    task.wait(0.05)
   else
-    task.spawn(function()fling(target,false,myToken)end)
+    task.spawn(function()fling(target,myToken)end)
     R.Heartbeat:Wait()
     local deadline=tick()+C.FLING_DURATION+1
    repeat task.wait(0.05)until skipTargetVersion~=targetSkipVersion or placementDone or not AF[target]or tick()>=deadline or cycleLost or not cE or myToken~=cToken or target~=selectedTarget()or target.Parent~=P
@@ -1276,7 +1259,6 @@ stopB.MouseButton1Click:Connect(function()
 _0xc2()
 cToken=cToken+1 setContinuousState(false)
 stopFollow()
-tE=false clrT()sT(false)tT.Text="FLING POR CONTACTO   INACTIVO"
 if sE then stopSit()end sS(false)sTog.Text="SIT KILL: INACTIVO"
 ss("deteniendo y restaurando...")nt("DETENER","flujos cancelados",2)
 end)
@@ -1293,7 +1275,6 @@ _0xc2()
 confirmYes.Text="CERRANDO..."confirmNo.Active=false
 cToken=cToken+1 cE=false
 stopFollow()
-tE=false clrT()
 if sE then stopSit()end
 clearDeathTracking()
 flB.Text="ACTIVAR"flB.TextColor3=C.GREEN flB.BackgroundColor3=Color3.fromRGB(5,52,34)flBStroke.Color=Color3.fromRGB(0,180,96)flBStroke.Thickness=1
@@ -1302,7 +1283,6 @@ task.spawn(function()
 task.wait(0.8)
 if dragInputConn then dragInputConn:Disconnect()dragInputConn=nil end
 if keyInputConn then keyInputConn:Disconnect()keyInputConn=nil end
-if characterAddedConn then characterAddedConn:Disconnect()characterAddedConn=nil end
 if sg and sg.Parent then sg:Destroy()end
 end)
 end)
@@ -1311,10 +1291,6 @@ if modo=="CINTURA"then modo="ROTACION"modoBtn.Text="MODO: ROTACION"
 elseif modo=="ROTACION"then modo="CLASICO"modoBtn.Text="MODO: CLASICO"
 else modo="CINTURA"modoBtn.Text="MODO: CINTURA"end
 nt("MODO",modo,2)
-end)
-tT.MouseButton1Click:Connect(function()
-tE=not tE sT(tE)tT.Text="FLING POR CONTACTO   "..(tE and "ACTIVO" or "INACTIVO")
-if tE then setupT()nt("CONTACTO","activo")else clrT()ss("idle")nt("CONTACTO","inactivo",2)end
 end)
 sTog.MouseButton1Click:Connect(function()
 if sE then stopSit()sS(false)sTog.Text="SIT KILL: INACTIVO"
@@ -1331,6 +1307,5 @@ else
 minimizar()
 end
 end end)end
-characterAddedConn=pl.CharacterAdded:Connect(function()task.wait(1)if not closing and tE then setupT()end end)
 task.wait(0.5)nt("CARGADO",_0x92,3)ss("idle")
 print(_0x93)
