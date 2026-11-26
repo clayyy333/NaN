@@ -4,7 +4,6 @@ local pl=P.LocalPlayer local mob=U.TouchEnabled and not U.KeyboardEnabled
 local AF={}local tE=false local tCd={}local mz=false
 local sE=false local sC=nil local mt={}
 local cE=false local cToken=0 local cCleaning=false
-local giftEnabled=false local giftToken=0
 local skipTargetVersion=0
 local closing=false
 local dragInputConn,keyInputConn
@@ -683,6 +682,8 @@ cameraDistanceFrame.Size=UDim2.new(1,0,0,34)cameraDistanceFrame.Position=UDim2.n
 depthFrame.Size=UDim2.new(1,0,0,34)depthFrame.Position=UDim2.new(0,0,0,148)
 balloonFrame.Size=UDim2.new(.49,-4,0,36)balloonFrame.Position=UDim2.new(0,0,0,186)
 perspectiveFrame.Size=UDim2.new(.51,-4,0,36)perspectiveFrame.Position=UDim2.new(.49,4,0,186)
+local Extras=(function()
+local giftEnabled=false local giftToken=0
 local viewerButton=Instance.new("TextButton")viewerButton.Size=UDim2.new(1,0,0,36)viewerButton.Position=UDim2.new(0,0,0,226)viewerButton.BackgroundColor3=Color3.fromRGB(19,30,47)viewerButton.Text="VISOR DE ACCESORIOS Y HRP 3D"viewerButton.TextColor3=Color3.fromRGB(207,178,255)viewerButton.TextSize=11 viewerButton.Font=Enum.Font.GothamBold viewerButton.BorderSizePixel=0 viewerButton.Parent=ct mc(9,viewerButton)ms(Color3.fromRGB(133,82,210),1,viewerButton)
 local giftButton=Instance.new("TextButton")giftButton.Size=UDim2.new(1,0,0,36)giftButton.Position=UDim2.new(0,0,0,270)giftButton.BackgroundColor3=C.PANEL giftButton.Text=""giftButton.BorderSizePixel=0 giftButton.Parent=ct mc(9,giftButton)local giftStroke=ms(C.STROKE,1,giftButton)
 local giftLabel=Instance.new("TextLabel")giftLabel.Size=UDim2.new(1,-76,1,0)giftLabel.Position=UDim2.new(0,12,0,0)giftLabel.BackgroundTransparency=1 giftLabel.Text="REGALOS SCHOOLBAG"giftLabel.TextColor3=C.GREY giftLabel.TextSize=11 giftLabel.Font=Enum.Font.GothamBold giftLabel.TextXAlignment=Enum.TextXAlignment.Left giftLabel.Parent=giftButton
@@ -801,6 +802,11 @@ local function giftStart()
  end)
  return true
 end
+return{GiftButton=giftButton,IsGiftEnabled=function()return giftEnabled end,StartGift=giftStart,StopGift=giftStop,GiftVisual=giftVisual,Close=function()
+ giftStop()viewerOpen=false viewerClear()
+ if viewerConn then viewerConn:Disconnect()viewerConn=nil end
+end}
+end)()
 local confirmShade=Instance.new("Frame")confirmShade.Size=UDim2.new(1,0,1,0)confirmShade.BackgroundColor3=Color3.fromRGB(0,0,0)confirmShade.BackgroundTransparency=0.2 confirmShade.BorderSizePixel=0 confirmShade.Active=true confirmShade.Visible=false confirmShade.ZIndex=300 confirmShade.Parent=mf
 local confirmBox=Instance.new("Frame")confirmBox.Size=UDim2.new(0,300,0,150)confirmBox.Position=UDim2.new(0.5,-150,0.5,-75)confirmBox.BackgroundColor3=C.PANEL confirmBox.BorderSizePixel=0 confirmBox.ZIndex=301 confirmBox.Parent=confirmShade mc(10,confirmBox)ms(C.PURPLE,2,confirmBox)
 local confirmTitle=Instance.new("TextLabel")confirmTitle.Size=UDim2.new(1,-24,0,58)confirmTitle.Position=UDim2.new(0,12,0,12)confirmTitle.BackgroundTransparency=1 confirmTitle.Text="¿ESTÁS SEGURO?\nSe detendrán y limpiarán todos los flujos."confirmTitle.TextWrapped=true confirmTitle.TextColor3=C.WHITE confirmTitle.TextSize=14 confirmTitle.Font=Enum.Font.GothamBold confirmTitle.ZIndex=302 confirmTitle.Parent=confirmBox
@@ -1511,7 +1517,7 @@ nt("SIGUIENTE OBJETIVO","avanzando al siguiente seleccionado",2)
 end)
 stopB.MouseButton1Click:Connect(function()
 stopTargetPerspective()
-giftStop()
+Extras.StopGift()
 cToken=cToken+1 setContinuousState(false)
 stopFollow()
 local returnNow=activeReturnToOrigin
@@ -1530,9 +1536,7 @@ confirmYes.MouseButton1Click:Connect(function()
 if closing then return end
 closing=true
 stopTargetPerspective()
-giftStop()
-viewerOpen=false viewerClear()
-if viewerConn then viewerConn:Disconnect()viewerConn=nil end
+Extras.Close()
 confirmYes.Text="CERRANDO..."confirmNo.Active=false
 cToken=cToken+1 cE=false
 stopFollow()
@@ -1550,9 +1554,9 @@ if keyInputConn then keyInputConn:Disconnect()keyInputConn=nil end
 if sg and sg.Parent then sg:Destroy()end
 end)
 end)
-giftButton.MouseButton1Click:Connect(function()
-if giftEnabled then giftStop()nt("REGALOS SCHOOLBAG","desactivado",2)
-else local ok,message=giftStart()if ok then nt("REGALOS SCHOOLBAG","envío continuo activado",2)else giftVisual(false,"OFF")nt("REGALOS SCHOOLBAG",message or"no se pudo activar",3)end end
+Extras.GiftButton.MouseButton1Click:Connect(function()
+if Extras.IsGiftEnabled()then Extras.StopGift()nt("REGALOS SCHOOLBAG","desactivado",2)
+else local ok,message=Extras.StartGift()if ok then nt("REGALOS SCHOOLBAG","envío continuo activado",2)else Extras.GiftVisual(false,"OFF")nt("REGALOS SCHOOLBAG",message or"no se pudo activar",3)end end
 end)
 modoBtn.MouseButton1Click:Connect(function()
 if modo=="CINTURA"then modo="ROTACION"modoBtn.Text="MODO: ROTACION"
