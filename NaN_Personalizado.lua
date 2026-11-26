@@ -1,6 +1,9 @@
 local C={FLING_DURATION=1.5,TOUCH_DISTANCE=3,TOUCH_COOLDOWN=3,SIT_RADIUS=10,WIDTH=520,HEIGHT=460,BG=Color3.fromRGB(2,7,6),PANEL=Color3.fromRGB(7,19,15),TITLE=Color3.fromRGB(4,12,10),STROKE=Color3.fromRGB(27,83,61),WHITE=Color3.fromRGB(231,255,242),GREY=Color3.fromRGB(153,194,171),DIM=Color3.fromRGB(14,48,36),GREEN=Color3.fromRGB(0,255,136),RED=Color3.fromRGB(238,75,101),PURPLE=Color3.fromRGB(0,255,136),CYAN=Color3.fromRGB(85,255,193)}
 local P=game:GetService("Players")local R=game:GetService("RunService")local T=game:GetService("TweenService")local U=game:GetService("UserInputService")local W=game:GetService("Workspace")
-local pl=P.LocalPlayer local mob=U.TouchEnabled and not U.KeyboardEnabled
+if not game:IsLoaded()then game.Loaded:Wait()end
+local pl=P.LocalPlayer
+while not pl do P:GetPropertyChangedSignal("LocalPlayer"):Wait()pl=P.LocalPlayer end
+local pg=pl:WaitForChild("PlayerGui")local mob=U.TouchEnabled and not U.KeyboardEnabled
 local AF={}local tE=false local tCd={}local mz=false
 local sE=false local sC=nil local mt={}
 local cE=false local cToken=0 local cCleaning=false
@@ -20,8 +23,8 @@ end
 local function gc()return pl.Character end
 local function grp()local c=gc()return c and c:FindFirstChild("HumanoidRootPart")end
 local function gpb(n)n=n:lower()local e,p={},{}for _,x in ipairs(P:GetPlayers())do if x~=pl then local a=x.Name:lower()local b=x.DisplayName:lower()if a==n or b==n then table.insert(e,x)elseif a:find(n,1,true)or b:find(n,1,true)then table.insert(p,x)end end end return #e>0 and e or p end
-if pl.PlayerGui:FindFirstChild("NaNFlingGUI")then pl.PlayerGui.NaNFlingGUI:Destroy()end
-local sg=Instance.new("ScreenGui")sg.Name="NaNFlingGUI"sg.ResetOnSpawn=false sg.ZIndexBehavior=Enum.ZIndexBehavior.Sibling sg.Parent=pl.PlayerGui
+if pg:FindFirstChild("NaNFlingGUI")then pg.NaNFlingGUI:Destroy()end
+local sg=Instance.new("ScreenGui")sg.Name="NaNFlingGUI"sg.ResetOnSpawn=false sg.ZIndexBehavior=Enum.ZIndexBehavior.Sibling sg.Parent=pg
 local function mc(r,p)local c=Instance.new("UICorner")c.CornerRadius=UDim.new(0,r or 8)c.Parent=p return c end
 local function ms(col,t,p)local s=Instance.new("UIStroke")s.Color=col or C.STROKE s.Thickness=t or 1 s.Parent=p return s end
 local function mg(a,b,r,p)local g=Instance.new("UIGradient")g.Color=ColorSequence.new(a,b)g.Rotation=r or 90 g.Parent=p return g end
@@ -33,6 +36,7 @@ for column=1,16 do
  task.spawn(function()while stream.Parent do stream.Position=UDim2.new(0,(column-1)*34,0,-280-math.random(0,180))local tween=T:Create(stream,TweenInfo.new(6+math.random()*5,Enum.EasingStyle.Linear),{Position=UDim2.new(0,(column-1)*34,1,20)})tween:Play()tween.Completed:Wait()end end)
 end
 T:Create(mf,TweenInfo.new(0.45,Enum.EasingStyle.Back,Enum.EasingDirection.Out),{Position=UDim2.new(0.5,-C.WIDTH/2,0.5,-C.HEIGHT/2)}):Play()
+task.delay(1,function()if mf and mf.Parent and mf.Position.Y.Scale<0 then mf.Position=UDim2.new(0.5,-C.WIDTH/2,0.5,-C.HEIGHT/2)end end)
 local tb=Instance.new("Frame")tb.Size=UDim2.new(1,0,0,56)tb.BackgroundColor3=C.TITLE tb.BorderSizePixel=0 tb.Parent=mf mc(10,tb)mg(Color3.fromRGB(5,28,19),Color3.fromRGB(2,9,7),0,tb)
 local accent=Instance.new("Frame")accent.Size=UDim2.new(0,4,0,28)accent.Position=UDim2.new(0,14,0,14)accent.BackgroundColor3=C.PURPLE accent.BorderSizePixel=0 accent.Parent=tb mc(3,accent)mg(C.CYAN,C.PURPLE,90,accent)
 local tl=Instance.new("TextLabel")tl.Size=UDim2.new(1,-110,0,23)tl.Position=UDim2.new(0,28,0,8)tl.BackgroundTransparency=1 tl.Text="NaN Personalizado by Psychoo"tl.TextColor3=C.GREEN tl.TextSize=16 tl.Font=Enum.Font.RobotoMono tl.TextXAlignment=Enum.TextXAlignment.Left tl.Parent=tb
@@ -272,7 +276,7 @@ local function updateCameraDistanceDisplay()
  end
 end
 local function pointerOverPerspectiveGui(position)
- local ok,objects=pcall(function()return pl.PlayerGui:GetGuiObjectsAtPosition(position.X,position.Y)end)
+ local ok,objects=pcall(function()return pg:GetGuiObjectsAtPosition(position.X,position.Y)end)
  if not ok then return false end
  for _,object in ipairs(objects)do if object==sg or object:IsDescendantOf(sg)then return true end end
  return false
@@ -895,7 +899,7 @@ for column=1,3 do
 end
 local dr,ds,sp
 local function isInteractivePoint(position)
- local ok,objects=pcall(function()return pl.PlayerGui:GetGuiObjectsAtPosition(position.X,position.Y)end)
+ local ok,objects=pcall(function()return pg:GetGuiObjectsAtPosition(position.X,position.Y)end)
  if not ok then return false end
  for _,object in ipairs(objects)do
   local current=object
