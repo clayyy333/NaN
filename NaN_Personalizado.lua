@@ -1,21 +1,19 @@
-local C={FLING_DURATION=1.5,SIT_RADIUS=10,WIDTH=520,HEIGHT=360,BG=Color3.fromRGB(2,7,6),PANEL=Color3.fromRGB(7,19,15),TITLE=Color3.fromRGB(4,12,10),STROKE=Color3.fromRGB(27,83,61),WHITE=Color3.fromRGB(231,255,242),GREY=Color3.fromRGB(153,194,171),DIM=Color3.fromRGB(14,48,36),GREEN=Color3.fromRGB(0,255,136),RED=Color3.fromRGB(238,75,101),PURPLE=Color3.fromRGB(0,255,136),CYAN=Color3.fromRGB(85,255,193)}
-local function _0x2d(a)local b={}for c=1,#a do b[c]=string.char(bit32.bxor(a[c],43))end return table.concat(b)end
-local _0x91=_0x2d({101,74,101,109,71,66,69,76,108,126,98})
-local _0x92=_0x2d({101,74,101,11,123,78,89,88,68,69,74,71,66,81,74,79,68,11,73,82,11,123,88,82,72,67,68,68})
-local _0x93=_0x2d({112,101,74,101,11,123,78,89,88,68,69,74,71,66,81,74,79,68,118,11,104,66,69,95,94,89,74,11,0,11,121,68,95,74,72,66,232,152,69,11,0,11,104,71,232,138,88,66,72,68,11,0,11,110,77,78,72,95,68,11,88,78,69,95,74,79,68,11,0,11,104,68,69,95,74,79,68,89,11,79,78,11,89,78,66,69,66,72,66,68,88})
+local C={FLING_DURATION=1.5,TOUCH_DISTANCE=3,TOUCH_COOLDOWN=3,SIT_RADIUS=10,WIDTH=520,HEIGHT=460,BG=Color3.fromRGB(2,7,6),PANEL=Color3.fromRGB(7,19,15),TITLE=Color3.fromRGB(4,12,10),STROKE=Color3.fromRGB(27,83,61),WHITE=Color3.fromRGB(231,255,242),GREY=Color3.fromRGB(153,194,171),DIM=Color3.fromRGB(14,48,36),GREEN=Color3.fromRGB(0,255,136),RED=Color3.fromRGB(238,75,101),PURPLE=Color3.fromRGB(0,255,136),CYAN=Color3.fromRGB(85,255,193)}
 local P=game:GetService("Players")local R=game:GetService("RunService")local T=game:GetService("TweenService")local U=game:GetService("UserInputService")local W=game:GetService("Workspace")
 local pl=P.LocalPlayer local mob=U.TouchEnabled and not U.KeyboardEnabled
-local AF={}local mz=false
+local AF={}local tE=false local tCd={}local mz=false
 local sE=false local sC=nil local mt={}
 local cE=false local cToken=0 local cCleaning=false
+local giftEnabled=false local giftToken=0
 local skipTargetVersion=0
 local closing=false
 local dragInputConn,keyInputConn
 local modo="CINTURA"
-local cinturaDepth=12
+local cinturaDepth=13
 local followConn=nil
 local followActive=false
 local followOrigin=nil
+local activeReturnToOrigin=nil
 local function stopFollow()
  followActive=false
  if followConn then followConn:Disconnect() followConn=nil end
@@ -23,12 +21,13 @@ end
 local function gc()return pl.Character end
 local function grp()local c=gc()return c and c:FindFirstChild("HumanoidRootPart")end
 local function gpb(n)n=n:lower()local e,p={},{}for _,x in ipairs(P:GetPlayers())do if x~=pl then local a=x.Name:lower()local b=x.DisplayName:lower()if a==n or b==n then table.insert(e,x)elseif a:find(n,1,true)or b:find(n,1,true)then table.insert(p,x)end end end return #e>0 and e or p end
-local _0x94=pl.PlayerGui:FindFirstChild(_0x91)if _0x94 then _0x94:Destroy()end
-local sg=Instance.new("ScreenGui")sg.Name=_0x91 sg.ResetOnSpawn=false sg.ZIndexBehavior=Enum.ZIndexBehavior.Sibling sg.Parent=pl.PlayerGui
+if pl.PlayerGui:FindFirstChild("NaNFlingGUI")then pl.PlayerGui.NaNFlingGUI:Destroy()end
+local sg=Instance.new("ScreenGui")sg.Name="NaNFlingGUI"sg.ResetOnSpawn=false sg.ZIndexBehavior=Enum.ZIndexBehavior.Sibling sg.Parent=pl.PlayerGui
 local function mc(r,p)local c=Instance.new("UICorner")c.CornerRadius=UDim.new(0,r or 8)c.Parent=p return c end
 local function ms(col,t,p)local s=Instance.new("UIStroke")s.Color=col or C.STROKE s.Thickness=t or 1 s.Parent=p return s end
 local function mg(a,b,r,p)local g=Instance.new("UIGradient")g.Color=ColorSequence.new(a,b)g.Rotation=r or 90 g.Parent=p return g end
 local mf=Instance.new("Frame")mf.Size=UDim2.new(0,C.WIDTH,0,C.HEIGHT)mf.Position=UDim2.new(0.5,-C.WIDTH/2,-0.5,0)mf.BackgroundColor3=C.BG mf.BorderSizePixel=0 mf.Active=true mf.Parent=sg mc(10,mf)ms(Color3.fromRGB(18,112,75),1,mf)mg(Color3.fromRGB(4,14,11),Color3.fromRGB(1,5,4),90,mf)
+for scan=1,22 do local line=Instance.new("Frame")line.Size=UDim2.new(1,-4,0,1)line.Position=UDim2.new(0,2,0,scan*20)line.BackgroundColor3=Color3.fromRGB(25,94,67)line.BackgroundTransparency=.9 line.BorderSizePixel=0 line.ZIndex=0 line.Parent=mf end
 local matrixLayer=Instance.new("Frame")matrixLayer.Size=UDim2.new(1,0,1,-56)matrixLayer.Position=UDim2.new(0,0,0,56)matrixLayer.BackgroundTransparency=1 matrixLayer.ClipsDescendants=true matrixLayer.ZIndex=0 matrixLayer.Parent=mf
 for column=1,16 do
  local stream=Instance.new("TextLabel")stream.Size=UDim2.new(0,24,0,260)stream.Position=UDim2.new(0,(column-1)*34,-.5-math.random(),0)stream.BackgroundTransparency=1 stream.Text="0\n1\n0\n0\n1\n1\n0\n1\n0\n1\n1\n0"stream.TextColor3=Color3.fromRGB(0,180,92)stream.TextTransparency=.78 stream.TextSize=11 stream.Font=Enum.Font.RobotoMono stream.TextYAlignment=Enum.TextYAlignment.Top stream.ZIndex=0 stream.Parent=matrixLayer
@@ -37,7 +36,7 @@ end
 T:Create(mf,TweenInfo.new(0.45,Enum.EasingStyle.Back,Enum.EasingDirection.Out),{Position=UDim2.new(0.5,-C.WIDTH/2,0.5,-C.HEIGHT/2)}):Play()
 local tb=Instance.new("Frame")tb.Size=UDim2.new(1,0,0,56)tb.BackgroundColor3=C.TITLE tb.BorderSizePixel=0 tb.Parent=mf mc(10,tb)mg(Color3.fromRGB(5,28,19),Color3.fromRGB(2,9,7),0,tb)
 local accent=Instance.new("Frame")accent.Size=UDim2.new(0,4,0,28)accent.Position=UDim2.new(0,14,0,14)accent.BackgroundColor3=C.PURPLE accent.BorderSizePixel=0 accent.Parent=tb mc(3,accent)mg(C.CYAN,C.PURPLE,90,accent)
-local tl=Instance.new("TextLabel")tl.Size=UDim2.new(1,-110,0,23)tl.Position=UDim2.new(0,28,0,8)tl.BackgroundTransparency=1 tl.Text=_0x92 tl.TextColor3=C.GREEN tl.TextSize=16 tl.Font=Enum.Font.RobotoMono tl.TextXAlignment=Enum.TextXAlignment.Left tl.Parent=tb
+local tl=Instance.new("TextLabel")tl.Size=UDim2.new(1,-110,0,23)tl.Position=UDim2.new(0,28,0,8)tl.BackgroundTransparency=1 tl.Text="NaN Personalizado by Psychoo"tl.TextColor3=C.GREEN tl.TextSize=16 tl.Font=Enum.Font.RobotoMono tl.TextXAlignment=Enum.TextXAlignment.Left tl.Parent=tb
 local subtitle=Instance.new("TextLabel")subtitle.Size=UDim2.new(1,-110,0,16)subtitle.Position=UDim2.new(0,28,0,31)subtitle.BackgroundTransparency=1 subtitle.Text=""subtitle.TextColor3=C.GREY subtitle.TextSize=10 subtitle.Font=Enum.Font.RobotoMono subtitle.TextXAlignment=Enum.TextXAlignment.Left subtitle.Parent=tb
 local minBtn=Instance.new("TextButton")minBtn.Size=UDim2.new(0,30,0,30)minBtn.Position=UDim2.new(1,-76,0,13)minBtn.BackgroundColor3=C.PANEL minBtn.Text="—"minBtn.TextColor3=C.GREY minBtn.TextSize=16 minBtn.Font=Enum.Font.GothamBold minBtn.BorderSizePixel=0 minBtn.Parent=tb mc(8,minBtn)ms(C.STROKE,1,minBtn)
 local clsBtn=Instance.new("TextButton")clsBtn.Size=UDim2.new(0,30,0,30)clsBtn.Position=UDim2.new(1,-40,0,13)clsBtn.BackgroundColor3=Color3.fromRGB(49,24,35)clsBtn.Text="×"clsBtn.TextColor3=Color3.fromRGB(255,117,135)clsBtn.TextSize=18 clsBtn.Font=Enum.Font.GothamBold clsBtn.BorderSizePixel=0 clsBtn.Parent=tb mc(8,clsBtn)ms(Color3.fromRGB(112,42,59),1,clsBtn)
@@ -243,6 +242,7 @@ end
 local perspectiveActive=false
 local perspectiveTarget=nil
 local perspectiveConnection=nil
+local perspectiveRenderName="NaNPerspective_"..tostring(pl.UserId)
 local perspectiveZoomConnection=nil
 local perspectivePinchConnection=nil
 local perspectiveInputBeganConnection=nil
@@ -254,47 +254,57 @@ local perspectiveSavedType=nil
 local perspectiveSavedSubject=nil
 local perspectiveSavedCFrame=nil
 local PERSPECTIVE_DEFAULT_HEIGHT=8
-local PERSPECTIVE_MIN_HEIGHT=8
+local PERSPECTIVE_MIN_HEIGHT=0
 local PERSPECTIVE_MAX_HEIGHT=80
 local perspectiveHeight=PERSPECTIVE_DEFAULT_HEIGHT
 local perspectiveTargetHeight=PERSPECTIVE_DEFAULT_HEIGHT
 local perspectivePinchScale=nil
-local perspectiveMode=_0x2d({127,100,123})
+local perspectiveMode="TOP"
 local perspectiveYaw=0
 local perspectivePitch=math.rad(-89)
 local perspectiveRotating=false
 local perspectiveTouch=nil
 local perspectiveLastTouch=nil
 local perspectivePinching=false
+local cameraDistanceInput=nil
+local function updateCameraDistanceDisplay()
+ if cameraDistanceInput and not cameraDistanceInput:IsFocused()then
+  cameraDistanceInput.Text=string.format("%.1f",perspectiveTargetHeight):gsub("%.0$","")
+ end
+end
 local function pointerOverPerspectiveGui(position)
  local ok,objects=pcall(function()return pl.PlayerGui:GetGuiObjectsAtPosition(position.X,position.Y)end)
  if not ok then return false end
  for _,object in ipairs(objects)do if object==sg or object:IsDescendantOf(sg)then return true end end
  return false
 end
-local _0xc0=(function(a)local b={}for c=1,#a do b[c]=_0x2d(a[c])end return b end)({
-{104,67,74,89,74,72,95,78,89},{123,74,89,78,69,95},{99,94,70,74,69,68,66,79,121,68,68,95,123,74,89,95},{99,94,70,74,69,68,66,79},
-{109,66,69,79,109,66,89,88,95,104,67,66,71,79},{109,66,69,79,109,66,89,88,95,104,67,66,71,79,100,77,104,71,74,88,88},
-{104,94,89,89,78,69,95,104,74,70,78,89,74},{104,74,70,78,89,74,127,82,91,78},{104,74,70,78,89,74,120,94,73,65,78,72,95},{104,109,89,74,70,78},{109,68,72,94,88},{123,68,88,66,95,66,68,69},
-{105,74,72,64,91,74,72,64},{121,78,70,68,95,78,88},{110,90,94,66,91,127,68,68,71,121,109},{121,78,70,68,95,78,109,94,69,72,95,66,68,69},{127,68,68,71},{110,90,94,66,91,127,68,68,71},
-{121,78,91,71,66,72,74,95,78,79,120,95,68,89,74,76,78},{98,69,93,68,64,78,120,78,89,93,78,89},{125,74,71,78,69,95,66,69,78,105,74,71,71,68,68,69},{101,78,92,114,78,74,89,105,74,71,71,68,68,69},
-{104,71,78,74,89,127,68,68,71,121,110},{121,78,70,68,95,78,110,93,78,69,95},{109,66,89,78,120,78,89,93,78,89},{127,100,123},{105,106,104,96},
-{109,121,100,101,127},{98,88,106},{103,68,68,64,125,78,72,95,68,89}
-})
-local function _0xc1(a,b,...)return a[_0xc0[b]](a,...)end
-local function _0xc4(root)
- local look=root and root[_0xc0[10]][_0xc0[30]]or Vector3.new(0,0,-1)
+local function setPerspectivePreset(root)
+ local look=root and root.CFrame.LookVector or Vector3.new(0,0,-1)
  local horizontal=Vector3.new(look.X,0,look.Z)
  if horizontal.Magnitude<.001 then horizontal=Vector3.new(0,0,-1)else horizontal=horizontal.Unit end
- local radial=perspectiveMode==_0xc0[27]and-horizontal or horizontal
+ local radial=perspectiveMode=="BACK"and-horizontal or horizontal
  perspectiveYaw=math.atan2(radial.X,radial.Z)
- perspectivePitch=perspectiveMode==_0xc0[26]and math.rad(-89)or math.rad(-8)
+ perspectivePitch=perspectiveMode=="TOP"and math.rad(-89)or math.rad(-8)
 end
-local function _0xc2()
+local function applyPerspectiveCameraNow()
+ if not perspectiveActive or not perspectiveTarget then return false end
+ local camera=W.CurrentCamera
+ local character=perspectiveTarget.Character
+ local root=character and character:FindFirstChild("HumanoidRootPart")
+ if not camera or not root or not root.Parent then return false end
+ local focus=root.Position+Vector3.new(0,1,0)
+ local rotation=CFrame.Angles(0,perspectiveYaw,0)*CFrame.Angles(perspectivePitch,0,0)
+ local position=focus+rotation:VectorToWorldSpace(Vector3.new(0,0,perspectiveHeight))
+ camera.CameraType=Enum.CameraType.Scriptable
+ camera.CFrame=CFrame.lookAt(position,focus)
+ camera.Focus=CFrame.new(focus)
+ return true
+end
+local function stopTargetPerspective()
  local shouldRestore=perspectiveActive or perspectiveConnection~=nil or perspectiveSavedType~=nil or perspectiveSavedSubject~=nil or perspectiveSavedCFrame~=nil
  perspectiveActive=false
  perspectiveTarget=nil
- if perspectiveConnection then perspectiveConnection:Disconnect()perspectiveConnection=nil end
+ if perspectiveConnection then pcall(function()R:UnbindFromRenderStep(perspectiveRenderName)end)perspectiveConnection=nil end
  if perspectiveZoomConnection then perspectiveZoomConnection:Disconnect()perspectiveZoomConnection=nil end
  if perspectivePinchConnection then perspectivePinchConnection:Disconnect()perspectivePinchConnection=nil end
  if perspectiveInputBeganConnection then perspectiveInputBeganConnection:Disconnect()perspectiveInputBeganConnection=nil end
@@ -308,37 +318,37 @@ local function _0xc2()
  perspectiveLastTouch=nil
  perspectivePinching=false
  pcall(function()U.MouseBehavior=Enum.MouseBehavior.Default end)
- local camera=W[_0xc0[7]]
+ local camera=W.CurrentCamera
  if shouldRestore and camera then
-  camera[_0xc0[8]]=perspectiveSavedType or Enum.CameraType.Custom
-  if perspectiveSavedSubject and perspectiveSavedSubject[_0xc0[2]]then
-   camera[_0xc0[9]]=perspectiveSavedSubject
+  camera.CameraType=perspectiveSavedType or Enum.CameraType.Custom
+  if perspectiveSavedSubject and perspectiveSavedSubject.Parent then
+   camera.CameraSubject=perspectiveSavedSubject
   else
    local character=gc()
-   local humanoid=character and _0xc1(character,6,_0xc0[4])
-   if humanoid then camera[_0xc0[9]]=humanoid end
+   local humanoid=character and character:FindFirstChildOfClass("Humanoid")
+   if humanoid then camera.CameraSubject=humanoid end
   end
-  if perspectiveSavedCFrame then camera[_0xc0[10]]=perspectiveSavedCFrame end
+  if perspectiveSavedCFrame then camera.CFrame=perspectiveSavedCFrame end
  end
  perspectiveSavedType=nil
  perspectiveSavedSubject=nil
  perspectiveSavedCFrame=nil
 end
-local function _0xc3(target)
- _0xc2()
- local character=target and target[_0xc0[1]]
- local root=character and _0xc1(character,5,_0xc0[3])
- local camera=W[_0xc0[7]]
- if not target or target[_0xc0[2]]~=P or not root or not camera then return false end
- perspectiveSavedType=camera[_0xc0[8]]
- perspectiveSavedSubject=camera[_0xc0[9]]
- perspectiveSavedCFrame=camera[_0xc0[10]]
+local function startTargetPerspective(target)
+ stopTargetPerspective()
+ local character=target and target.Character
+ local root=character and character:FindFirstChild("HumanoidRootPart")
+ local camera=W.CurrentCamera
+ if not target or target.Parent~=P or not root or not camera then return false end
+ perspectiveSavedType=camera.CameraType
+ perspectiveSavedSubject=camera.CameraSubject
+ perspectiveSavedCFrame=camera.CFrame
  perspectiveTarget=target
  perspectiveActive=true
- perspectiveHeight=PERSPECTIVE_DEFAULT_HEIGHT
- perspectiveTargetHeight=PERSPECTIVE_DEFAULT_HEIGHT
- _0xc4(root)
- camera[_0xc0[8]]=Enum.CameraType.Scriptable
+ perspectiveHeight=perspectiveTargetHeight
+ updateCameraDistanceDisplay()
+ setPerspectivePreset(root)
+ camera.CameraType=Enum.CameraType.Scriptable
  perspectiveInputBeganConnection=U.InputBegan:Connect(function(input,processed)
   if not perspectiveActive or processed or pointerOverPerspectiveGui(input.Position)then return end
   if input.UserInputType==Enum.UserInputType.MouseButton2 then
@@ -357,6 +367,7 @@ local function _0xc3(target)
   if input.UserInputType==Enum.UserInputType.MouseWheel then
    if pointerOverPerspectiveGui(U:GetMouseLocation())then return end
    perspectiveTargetHeight=math.clamp(perspectiveTargetHeight-input.Position.Z*4,PERSPECTIVE_MIN_HEIGHT,PERSPECTIVE_MAX_HEIGHT)
+   updateCameraDistanceDisplay()
   elseif perspectiveRotating and input.UserInputType==Enum.UserInputType.MouseMovement then
    perspectiveYaw-=input.Delta.X*.006
    perspectivePitch=math.clamp(perspectivePitch-input.Delta.Y*.006,math.rad(-89),math.rad(80))
@@ -373,6 +384,7 @@ local function _0xc3(target)
    local previous=perspectivePinchScale or scale
    if previous>0 and scale>0 then
     perspectiveTargetHeight=math.clamp(perspectiveTargetHeight/(scale/previous),PERSPECTIVE_MIN_HEIGHT,PERSPECTIVE_MAX_HEIGHT)
+    updateCameraDistanceDisplay()
    end
    perspectivePinchScale=scale
   else
@@ -395,25 +407,27 @@ local function _0xc3(target)
  perspectiveTouchEndedConnection=U.TouchEnded:Connect(function(touch)
   if touch==perspectiveTouch then perspectiveTouch=nil perspectiveLastTouch=nil end
  end)
- perspectiveConnection=R.RenderStepped:Connect(function(dt)
-  if not perspectiveActive or not cE or perspectiveTarget~=selectedTarget()or perspectiveTarget[_0xc0[2]]~=P then
-   _0xc2()
+ pcall(function()R:UnbindFromRenderStep(perspectiveRenderName)end)
+ perspectiveConnection=true
+ R:BindToRenderStep(perspectiveRenderName,Enum.RenderPriority.Last.Value,function(dt)
+  if not perspectiveActive or not cE or perspectiveTarget~=selectedTarget()or perspectiveTarget.Parent~=P then
+   stopTargetPerspective()
    return
   end
-  camera=W[_0xc0[7]]
-  character=perspectiveTarget[_0xc0[1]]
-  root=character and _0xc1(character,5,_0xc0[3])
-  if not camera or not root or not root[_0xc0[2]]then
-   _0xc2()
+  camera=W.CurrentCamera
+  character=perspectiveTarget.Character
+  root=character and character:FindFirstChild("HumanoidRootPart")
+  if not camera or not root or not root.Parent then
+   stopTargetPerspective()
    return
   end
   perspectiveHeight+=(perspectiveTargetHeight-perspectiveHeight)*(1-math.exp(-10*dt))
-  local focus=root[_0xc0[12]]+Vector3.new(0,1,0)
+  local focus=root.Position+Vector3.new(0,1,0)
   local rotation=CFrame.Angles(0,perspectiveYaw,0)*CFrame.Angles(perspectivePitch,0,0)
   local position=focus+rotation:VectorToWorldSpace(Vector3.new(0,0,perspectiveHeight))
-  camera[_0xc0[8]]=Enum.CameraType.Scriptable
-  camera[_0xc0[10]]=CFrame.lookAt(position,focus)
-  camera[_0xc0[11]]=CFrame.new(focus)
+  camera.CameraType=Enum.CameraType.Scriptable
+  camera.CFrame=CFrame.lookAt(position,focus)
+  camera.Focus=CFrame.new(focus)
  end)
  return true
 end
@@ -422,6 +436,42 @@ local flB=Instance.new("TextButton")flB.Size=UDim2.new(1,0,0,40)flB.Position=UDi
 local function mkT(t,y,on)local b=Instance.new("TextButton")b.Size=UDim2.new(1,0,0,34)b.Position=UDim2.new(0,0,0,y)b.BackgroundColor3=on and C.DIM or C.PANEL b.Text=t..(on and "   ACTIVO" or "   INACTIVO")b.TextColor3=on and C.WHITE or C.GREY b.TextSize=11 b.Font=Enum.Font.GothamBold b.TextXAlignment=Enum.TextXAlignment.Left b.BorderSizePixel=0 b.Parent=ct mc(9,b)local s=ms(on and C.PURPLE or C.STROKE,1,b)local pd=Instance.new("UIPadding")pd.PaddingLeft=UDim.new(0,12)pd.Parent=b local function ss(o)b.BackgroundColor3=o and Color3.fromRGB(8,54,37)or C.PANEL b.TextColor3=o and C.WHITE or C.GREY s.Color=o and C.PURPLE or C.STROKE end return b,ss end
 local modoBtn=Instance.new("TextButton")modoBtn.Size=UDim2.new(1,0,0,34)modoBtn.Position=UDim2.new(0,0,0,116)modoBtn.BackgroundColor3=C.PANEL modoBtn.Text="MODO: CINTURA"modoBtn.TextColor3=C.CYAN modoBtn.TextSize=11 modoBtn.Font=Enum.Font.GothamBold modoBtn.TextXAlignment=Enum.TextXAlignment.Left modoBtn.BorderSizePixel=0 modoBtn.Parent=ct mc(7,modoBtn)ms(C.STROKE,1,modoBtn)
 local pd=Instance.new("UIPadding")pd.PaddingLeft=UDim.new(0,10)pd.Parent=modoBtn
+local depthFrame=Instance.new("Frame")
+depthFrame.Size=UDim2.new(1,0,0,32)
+depthFrame.Position=UDim2.new(0,0,0,440)
+depthFrame.BackgroundColor3=C.PANEL
+depthFrame.BorderSizePixel=0
+depthFrame.Parent=ct
+mc(9,depthFrame) ms(C.STROKE,1,depthFrame)
+local depthLabel=Instance.new("TextLabel")
+depthLabel.Size=UDim2.new(1,-94,1,0)
+depthLabel.Position=UDim2.new(0,10,0,0)
+depthLabel.BackgroundTransparency=1
+depthLabel.Text="DISTANCIA DEL OBJETIVO: 0–20"
+depthLabel.TextColor3=C.GREY
+depthLabel.TextSize=11
+depthLabel.Font=Enum.Font.GothamBold
+depthLabel.TextXAlignment=Enum.TextXAlignment.Left
+depthLabel.Parent=depthFrame
+local depthInput=Instance.new("TextBox")
+depthInput.Size=UDim2.new(0,75,0,26)
+depthInput.Position=UDim2.new(1,-80,0,3)
+depthInput.BackgroundColor3=Color3.fromRGB(10,15,27)
+depthInput.TextColor3=C.WHITE
+depthInput.TextSize=12
+depthInput.Font=Enum.Font.GothamBold
+depthInput.Text="13"
+depthInput.PlaceholderText="DISTANCIA"
+depthInput.ClearTextOnFocus=false
+depthInput.Parent=depthFrame
+mc(7,depthInput) ms(Color3.fromRGB(58,70,99),1,depthInput)
+depthInput.FocusLost:Connect(function()
+ local value=tonumber(depthInput.Text)
+ if value and value==value and value~=math.huge and value~=-math.huge then
+  cinturaDepth=math.clamp(value,0,20)
+ end
+ depthInput.Text=tostring(cinturaDepth)
+end)
 local balloonChoice="ValentineBalloon"
 local OBJECT_SELECTED=Color3.fromRGB(112,72,210)
 local OBJECT_STROKE=Color3.fromRGB(168,125,255)
@@ -470,7 +520,7 @@ perspectiveFrame.Position=UDim2.new(0,0,0,516)
 perspectiveFrame.BackgroundTransparency=1
 perspectiveFrame.Parent=ct
 local perspectiveButtons={}
-local perspectiveOptions={{"CENTRAL",_0xc0[26]},{"FRONTAL",_0xc0[28]},{"TRASERA",_0xc0[27]}}
+local perspectiveOptions={{"CENTRAL","TOP"},{"FRONTAL","FRONT"},{"TRASERA","BACK"}}
 for index,option in ipairs(perspectiveOptions)do
  local button=Instance.new("TextButton")
  button.Size=UDim2.new(1/3,-4,1,0)
@@ -489,7 +539,7 @@ for index,option in ipairs(perspectiveOptions)do
   if perspectiveActive and perspectiveTarget then
    local character=perspectiveTarget.Character
    local root=character and character:FindFirstChild("HumanoidRootPart")
-   if root then _0xc4(root)end
+   if root then setPerspectivePreset(root)end
   end
   for mode,item in pairs(perspectiveButtons)do
    item.BackgroundColor3=mode==perspectiveMode and C.PURPLE or C.PANEL
@@ -497,8 +547,78 @@ for index,option in ipairs(perspectiveOptions)do
   end
  end)
 end
-ct.CanvasSize=UDim2.new(0,0,0,190)
+ct.CanvasSize=UDim2.new(0,0,0,560)
 local sTog,sS=mkT("SIT KILL",196,false)sTog.Text="SIT KILL: INACTIVO"
+local cameraDistanceFrame=Instance.new("Frame")
+cameraDistanceFrame.Size=UDim2.new(1,0,0,34)
+cameraDistanceFrame.BackgroundColor3=C.PANEL
+cameraDistanceFrame.BorderSizePixel=0
+cameraDistanceFrame.Parent=ct
+mc(9,cameraDistanceFrame)ms(C.STROKE,1,cameraDistanceFrame)
+local cameraDistanceLabel=Instance.new("TextLabel")
+cameraDistanceLabel.Size=UDim2.new(1,-164,1,0)
+cameraDistanceLabel.Position=UDim2.new(0,10,0,0)
+cameraDistanceLabel.BackgroundTransparency=1
+cameraDistanceLabel.Text="DISTANCIA CÁMARA: 0–80"
+cameraDistanceLabel.TextColor3=C.GREY
+cameraDistanceLabel.TextSize=11
+cameraDistanceLabel.Font=Enum.Font.GothamBold
+cameraDistanceLabel.TextXAlignment=Enum.TextXAlignment.Left
+cameraDistanceLabel.Parent=cameraDistanceFrame
+cameraDistanceInput=Instance.new("TextBox")
+cameraDistanceInput.Size=UDim2.new(0,58,0,28)
+cameraDistanceInput.Position=UDim2.new(1,-151,0,3)
+cameraDistanceInput.BackgroundColor3=Color3.fromRGB(10,15,27)
+cameraDistanceInput.TextColor3=C.WHITE
+cameraDistanceInput.TextSize=12
+cameraDistanceInput.Font=Enum.Font.GothamBold
+cameraDistanceInput.Text=tostring(PERSPECTIVE_DEFAULT_HEIGHT)
+cameraDistanceInput.PlaceholderText="0–80"
+cameraDistanceInput.ClearTextOnFocus=true
+cameraDistanceInput.Parent=cameraDistanceFrame
+mc(7,cameraDistanceInput)ms(Color3.fromRGB(58,70,99),1,cameraDistanceInput)
+local function applyCameraDistanceInput(immediate,reactivate)
+ local normalized=(cameraDistanceInput.Text or ""):gsub(",",".")
+ local value=tonumber(normalized)
+ if value and value==value and value~=math.huge and value~=-math.huge then
+  perspectiveTargetHeight=math.clamp(value,PERSPECTIVE_MIN_HEIGHT,PERSPECTIVE_MAX_HEIGHT)
+  if immediate then
+   if reactivate and not perspectiveActive then
+    local target=selectedTarget()
+    if target then startTargetPerspective(target)end
+   end
+   perspectiveHeight=perspectiveTargetHeight
+   applyPerspectiveCameraNow()
+  end
+  return true
+ end
+ return false
+end
+cameraDistanceInput:GetPropertyChangedSignal("Text"):Connect(function()
+ if cameraDistanceInput:IsFocused()then applyCameraDistanceInput(true)end
+end)
+cameraDistanceInput.FocusLost:Connect(function()
+ applyCameraDistanceInput(true)
+ updateCameraDistanceDisplay()
+end)
+local cameraDistanceApply=Instance.new("TextButton")
+cameraDistanceApply.Size=UDim2.new(0,84,0,28)
+cameraDistanceApply.Position=UDim2.new(1,-88,0,3)
+cameraDistanceApply.BackgroundColor3=Color3.fromRGB(8,54,37)
+cameraDistanceApply.Text="APLICAR"
+cameraDistanceApply.TextColor3=C.GREEN
+cameraDistanceApply.TextSize=10
+cameraDistanceApply.Font=Enum.Font.GothamBold
+cameraDistanceApply.BorderSizePixel=0
+cameraDistanceApply.Parent=cameraDistanceFrame
+mc(7,cameraDistanceApply)ms(Color3.fromRGB(0,180,96),1,cameraDistanceApply)
+cameraDistanceApply.MouseButton1Click:Connect(function()
+ local accepted=applyCameraDistanceInput(true,true)
+ cameraDistanceInput:ReleaseFocus()
+ updateCameraDistanceDisplay()
+ cameraDistanceApply.Text=accepted and("OK: "..cameraDistanceInput.Text)or"VALOR INVÁLIDO"
+ task.delay(1.2,function()if cameraDistanceApply and cameraDistanceApply.Parent then cameraDistanceApply.Text="APLICAR"end end)
+end)
 local skipB=Instance.new("TextButton")skipB.Size=UDim2.new(1,0,0,36)skipB.Position=UDim2.new(0,0,0,278)skipB.BackgroundColor3=Color3.fromRGB(25,57,84)skipB.Text="SIGUIENTE OBJETIVO   →"skipB.TextColor3=Color3.fromRGB(153,220,255)skipB.TextSize=11 skipB.Font=Enum.Font.GothamBold skipB.BorderSizePixel=0 skipB.Parent=ct mc(9,skipB)ms(Color3.fromRGB(44,105,144),1,skipB)
 local stopB=Instance.new("TextButton")stopB.Size=UDim2.new(1,0,0,36)stopB.Position=UDim2.new(0,0,0,320)stopB.BackgroundColor3=Color3.fromRGB(69,27,40)stopB.Text="■  DETENER TODO"stopB.TextColor3=Color3.fromRGB(255,157,171)stopB.TextSize=11 stopB.Font=Enum.Font.GothamBold stopB.BorderSizePixel=0 stopB.Parent=ct mc(9,stopB)ms(Color3.fromRGB(127,49,68),1,stopB)
 
@@ -534,7 +654,7 @@ local sl=Instance.new("TextLabel")sl.Size=UDim2.new(1,0,0,30)sl.Position=UDim2.n
 local rail=Instance.new("Frame")rail.Size=UDim2.new(1,-24,0,80)rail.Position=UDim2.new(0,12,0,66)rail.BackgroundColor3=Color3.fromRGB(3,14,10)rail.BorderSizePixel=0 rail.Parent=mf mc(8,rail)ms(Color3.fromRGB(20,103,70),1,rail)
 local railAccent=Instance.new("Frame")railAccent.Size=UDim2.new(0,4,1,-14)railAccent.Position=UDim2.new(0,0,0,7)railAccent.BackgroundColor3=C.CYAN railAccent.BorderSizePixel=0 railAccent.Parent=rail mc(2,railAccent)mg(C.CYAN,C.PURPLE,90,railAccent)
 local railTitle=Instance.new("TextLabel")railTitle.Size=UDim2.new(0,180,0,18)railTitle.Position=UDim2.new(0,12,0,4)railTitle.BackgroundTransparency=1 railTitle.Text="CONTROLES"railTitle.TextColor3=C.GREY railTitle.TextSize=11 railTitle.Font=Enum.Font.RobotoMono railTitle.TextXAlignment=Enum.TextXAlignment.Left railTitle.Parent=rail
-ct.Size=UDim2.new(1,-24,1,-166)ct.Position=UDim2.new(0,12,0,154)ct.CanvasSize=UDim2.new(0,0,0,190)ct.ScrollBarThickness=3
+ct.Size=UDim2.new(1,-24,1,-166)ct.Position=UDim2.new(0,12,0,154)ct.CanvasSize=UDim2.new(0,0,0,346)ct.ScrollBarThickness=3
 il.Text="CONFIGURACIÓN"
 flB.Parent=rail flB.Size=UDim2.new(0,154,0,42)flB.Position=UDim2.new(0,10,0,29)flB.TextWrapped=true flB.TextSize=12
 skipB.Parent=rail skipB.Size=UDim2.new(0,148,0,42)skipB.Position=UDim2.new(0,174,0,29)skipB.Text="SIGUIENTE"skipB.TextColor3=C.CYAN skipB.BackgroundColor3=Color3.fromRGB(5,33,27)skipB.TextWrapped=true skipB.TextSize=12
@@ -554,13 +674,20 @@ updateCommandLayout=function()
  end
 end
 updateCommandLayout()
-resetFrame.Parent=ct resetFrame.Size=UDim2.new(.48,0,0,30)resetFrame.Position=UDim2.new(0,0,0,152)
+resetFrame.Parent=ct resetFrame.Size=UDim2.new(.48,0,0,30)resetFrame.Position=UDim2.new(0,0,0,314)
 resetLabel.Size=UDim2.new(1,-12,1,0)resetLabel.Position=UDim2.new(0,6,0,0)resetLabel.TextSize=10 resetLabel.TextWrapped=false
-sl.Parent=ct sl.Size=UDim2.new(.5,-4,0,30)sl.Position=UDim2.new(.5,4,0,152)sl.TextSize=10 sl.TextWrapped=false
+sl.Parent=ct sl.Size=UDim2.new(.5,-4,0,30)sl.Position=UDim2.new(.5,4,0,314)sl.TextSize=10 sl.TextWrapped=false
 modoBtn.Size=UDim2.new(.49,-4,0,34)modoBtn.Position=UDim2.new(0,0,0,70)
 sTog.Size=UDim2.new(.51,-4,0,34)sTog.Position=UDim2.new(.49,4,0,70)
-balloonFrame.Size=UDim2.new(.49,-4,0,36)balloonFrame.Position=UDim2.new(0,0,0,110)
-perspectiveFrame.Size=UDim2.new(.51,-4,0,36)perspectiveFrame.Position=UDim2.new(.49,4,0,110)
+cameraDistanceFrame.Size=UDim2.new(1,0,0,34)cameraDistanceFrame.Position=UDim2.new(0,0,0,110)
+depthFrame.Size=UDim2.new(1,0,0,34)depthFrame.Position=UDim2.new(0,0,0,148)
+balloonFrame.Size=UDim2.new(.49,-4,0,36)balloonFrame.Position=UDim2.new(0,0,0,186)
+perspectiveFrame.Size=UDim2.new(.51,-4,0,36)perspectiveFrame.Position=UDim2.new(.49,4,0,186)
+local viewerButton=Instance.new("TextButton")viewerButton.Size=UDim2.new(1,0,0,36)viewerButton.Position=UDim2.new(0,0,0,226)viewerButton.BackgroundColor3=Color3.fromRGB(19,30,47)viewerButton.Text="VISOR DE ACCESORIOS Y HRP 3D"viewerButton.TextColor3=Color3.fromRGB(207,178,255)viewerButton.TextSize=11 viewerButton.Font=Enum.Font.GothamBold viewerButton.BorderSizePixel=0 viewerButton.Parent=ct mc(9,viewerButton)ms(Color3.fromRGB(133,82,210),1,viewerButton)
+local giftButton=Instance.new("TextButton")giftButton.Size=UDim2.new(1,0,0,36)giftButton.Position=UDim2.new(0,0,0,270)giftButton.BackgroundColor3=C.PANEL giftButton.Text=""giftButton.BorderSizePixel=0 giftButton.Parent=ct mc(9,giftButton)local giftStroke=ms(C.STROKE,1,giftButton)
+local giftLabel=Instance.new("TextLabel")giftLabel.Size=UDim2.new(1,-76,1,0)giftLabel.Position=UDim2.new(0,12,0,0)giftLabel.BackgroundTransparency=1 giftLabel.Text="REGALOS SCHOOLBAG"giftLabel.TextColor3=C.GREY giftLabel.TextSize=11 giftLabel.Font=Enum.Font.GothamBold giftLabel.TextXAlignment=Enum.TextXAlignment.Left giftLabel.Parent=giftButton
+local giftSwitch=Instance.new("Frame")giftSwitch.Size=UDim2.new(0,48,0,24)giftSwitch.Position=UDim2.new(1,-60,.5,-12)giftSwitch.BackgroundColor3=Color3.fromRGB(35,48,43)giftSwitch.BorderSizePixel=0 giftSwitch.Parent=giftButton mc(12,giftSwitch)
+local giftKnob=Instance.new("Frame")giftKnob.Size=UDim2.new(0,18,0,18)giftKnob.Position=UDim2.new(0,3,.5,-9)giftKnob.BackgroundColor3=C.GREY giftKnob.BorderSizePixel=0 giftKnob.Parent=giftSwitch mc(9,giftKnob)
 for _,node in ipairs(mf:GetDescendants())do
  if node:IsA("TextLabel")or node:IsA("TextButton")or node:IsA("TextBox")then
   if node:IsA("TextButton")or node:IsA("TextBox")then node.Font=Enum.Font.GothamBold else node.Font=Enum.Font.RobotoMono end
@@ -573,6 +700,107 @@ playerBtn.TextColor3=Color3.fromRGB(232,238,235)
 playerBtn.TextStrokeTransparency=1
 playerBtnStroke.Color=Color3.fromRGB(52,78,67)
 playerBtnStroke.Transparency=.3
+local viewerOpen=false
+local viewerOptions={attachments=false,mesh=false,boxes=false,hrp=false}
+local viewerMarkers={attachments={},mesh={},boxes={},hrp={}}
+local viewerFolder=Instance.new("Folder")viewerFolder.Name="NaNLocalViewer"viewerFolder.Parent=sg
+local viewerPanel=Instance.new("Frame")viewerPanel.Size=UDim2.new(0,344,0,238)viewerPanel.Position=UDim2.new(.5,-172,.5,-119)viewerPanel.BackgroundColor3=C.BG viewerPanel.BorderSizePixel=0 viewerPanel.Visible=false viewerPanel.ZIndex=200 viewerPanel.Parent=mf mc(10,viewerPanel)ms(Color3.fromRGB(133,82,210),1,viewerPanel)
+local viewerTitle=Instance.new("TextLabel")viewerTitle.Size=UDim2.new(1,-52,0,42)viewerTitle.Position=UDim2.new(0,14,0,4)viewerTitle.BackgroundTransparency=1 viewerTitle.Text="VISOR LOCAL 3D"viewerTitle.TextColor3=Color3.fromRGB(207,178,255)viewerTitle.TextSize=14 viewerTitle.Font=Enum.Font.GothamBold viewerTitle.TextXAlignment=Enum.TextXAlignment.Left viewerTitle.ZIndex=201 viewerTitle.Parent=viewerPanel
+local viewerClose=Instance.new("TextButton")viewerClose.Size=UDim2.new(0,32,0,32)viewerClose.Position=UDim2.new(1,-40,0,8)viewerClose.BackgroundColor3=Color3.fromRGB(49,24,35)viewerClose.Text="X"viewerClose.TextColor3=Color3.fromRGB(255,117,135)viewerClose.TextSize=13 viewerClose.Font=Enum.Font.GothamBold viewerClose.BorderSizePixel=0 viewerClose.ZIndex=201 viewerClose.Parent=viewerPanel mc(8,viewerClose)
+local viewerInfo=Instance.new("TextLabel")viewerInfo.Size=UDim2.new(1,-28,0,32)viewerInfo.Position=UDim2.new(0,14,0,42)viewerInfo.BackgroundTransparency=1 viewerInfo.Text="Usa la selección actual; sin selección muestra tu personaje."viewerInfo.TextWrapped=true viewerInfo.TextColor3=C.GREY viewerInfo.TextSize=10 viewerInfo.Font=Enum.Font.RobotoMono viewerInfo.TextXAlignment=Enum.TextXAlignment.Left viewerInfo.ZIndex=201 viewerInfo.Parent=viewerPanel
+local viewerColors={attachments=Color3.fromRGB(255,74,88),hrpAttachments=Color3.fromRGB(65,145,255),hrpCenter=Color3.fromRGB(65,255,110),mesh=Color3.fromRGB(65,145,255),boxes=Color3.fromRGB(65,255,110),hrp=Color3.fromRGB(196,74,255)}
+local viewerButtons={}
+local viewerNames={attachments="ATTACHMENTS",mesh="MALLA 3D",boxes="HANDLE BOX",hrp="HRP 3D"}
+for index,key in ipairs({"attachments","mesh","boxes","hrp"})do
+ local button=Instance.new("TextButton")button.Size=UDim2.new(.5,-21,0,38)button.Position=UDim2.new((index-1)%2*.5,index%2==1 and 14 or 7,0,index<=2 and 82 or 126)button.BackgroundColor3=C.PANEL button.Text=viewerNames[key].." — OFF"button.TextColor3=viewerColors[key]button.TextSize=11 button.Font=Enum.Font.GothamBold button.BorderSizePixel=0 button.ZIndex=201 button.Parent=viewerPanel mc(8,button)ms(viewerColors[key],1,button)viewerButtons[key]=button
+end
+local viewerStatus=Instance.new("TextLabel")viewerStatus.Size=UDim2.new(1,-28,0,38)viewerStatus.Position=UDim2.new(0,14,0,178)viewerStatus.BackgroundColor3=C.PANEL viewerStatus.Text="  MARCADORES: 0"viewerStatus.TextColor3=C.GREY viewerStatus.TextSize=10 viewerStatus.Font=Enum.Font.RobotoMono viewerStatus.TextXAlignment=Enum.TextXAlignment.Left viewerStatus.ZIndex=201 viewerStatus.Parent=viewerPanel mc(8,viewerStatus)ms(C.STROKE,1,viewerStatus)
+local function viewerRemove(group,object)local marker=group[object]if marker then marker:Destroy()group[object]=nil end end
+local function viewerClear()for _,group in pairs(viewerMarkers)do for object in pairs(group)do viewerRemove(group,object)end end viewerStatus.Text="  MARCADORES: 0"end
+local function viewerTargets()local targets={}for _,candidate in ipairs(P:GetPlayers())do if candidate~=pl and selectedPlayerIds[candidate.UserId]then table.insert(targets,candidate)end end if #targets==0 then targets[1]=pl end return targets end
+local function viewerContainer(object,character)local current=object while current and current~=character do if current:IsA("Accessory")or current:IsA("Accoutrement")or current:IsA("Tool")then return current end current=current.Parent end end
+local function viewerUpdate()
+ if closing or not viewerOpen then return end
+ local valid={attachments={},mesh={},boxes={},hrp={}}local count=0
+ for _,player in ipairs(viewerTargets())do local character=player.Character local hrp=character and character:FindFirstChild("HumanoidRootPart")if character then
+  for _,object in ipairs(character:GetDescendants())do
+   if viewerOptions.attachments and object:IsA("Attachment")and not object:IsA("Bone")then local part=object.Parent while part and not part:IsA("BasePart")do part=part.Parent end local container=viewerContainer(object,character)if part and(part==hrp or container)then valid.attachments[object]=true local marker=viewerMarkers.attachments[object]if not marker then marker=Instance.new("SphereHandleAdornment")marker.Name="AttachmentPoint"marker.Adornee=part marker.Radius=part==hrp and .13 or .10 marker.CFrame=part.CFrame:ToObjectSpace(object.WorldCFrame)marker.Color3=part==hrp and viewerColors.hrpAttachments or viewerColors.attachments marker.Transparency=0 marker.AlwaysOnTop=true marker.ZIndex=5 marker.Parent=viewerFolder viewerMarkers.attachments[object]=marker end count+=1 end end
+   if object:IsA("BasePart")then local container=viewerContainer(object,character)if container then
+    if viewerOptions.mesh and(object:IsA("MeshPart")or object:IsA("UnionOperation")or object:FindFirstChildWhichIsA("DataModelMesh"))then valid.mesh[object]=true if not viewerMarkers.mesh[object]then local marker=Instance.new("Highlight")marker.Name="MeshHighlight"marker.Adornee=object marker.FillColor=viewerColors.mesh marker.FillTransparency=.82 marker.OutlineColor=viewerColors.mesh marker.OutlineTransparency=.05 marker.DepthMode=Enum.HighlightDepthMode.Occluded marker.Parent=viewerFolder viewerMarkers.mesh[object]=marker end count+=1 end
+    if viewerOptions.boxes then valid.boxes[object]=true if not viewerMarkers.boxes[object]then local marker=Instance.new("SelectionBox")marker.Name="HandleBox"marker.Adornee=object marker.Color3=viewerColors.boxes marker.LineThickness=.025 marker.SurfaceTransparency=1 marker.Transparency=.1 marker.Parent=viewerFolder viewerMarkers.boxes[object]=marker end count+=1 end
+   end end
+  end
+  if viewerOptions.attachments and hrp and hrp:IsA("BasePart")then local key=hrp valid.attachments[key]=true if not viewerMarkers.attachments[key]then local marker=Instance.new("SphereHandleAdornment")marker.Name="HRPCenter"marker.Adornee=hrp marker.Radius=.13 marker.CFrame=CFrame.new()marker.Color3=viewerColors.hrpCenter marker.AlwaysOnTop=true marker.ZIndex=6 marker.Parent=viewerFolder viewerMarkers.attachments[key]=marker end count+=1 end
+  if viewerOptions.hrp and hrp and hrp:IsA("BasePart")then valid.hrp[hrp]=true local marker=viewerMarkers.hrp[hrp]if not marker then marker=Instance.new("BoxHandleAdornment")marker.Name="HRP3D"marker.Adornee=hrp marker.Size=hrp.Size marker.CFrame=CFrame.new()marker.Color3=viewerColors.hrp marker.Transparency=.48 marker.AlwaysOnTop=true marker.ZIndex=2 marker.Parent=viewerFolder viewerMarkers.hrp[hrp]=marker else marker.Size=hrp.Size end count+=1 end
+ end end
+ for key,group in pairs(viewerMarkers)do for object in pairs(group)do if not valid[key][object]then viewerRemove(group,object)end end end
+ viewerStatus.Text="  MARCADORES: "..count.."  |  JUGADORES: "..#viewerTargets()
+end
+for key,button in pairs(viewerButtons)do button.MouseButton1Click:Connect(function()viewerOptions[key]=not viewerOptions[key]button.Text=viewerNames[key]..(viewerOptions[key]and" — ON"or" — OFF")button.BackgroundColor3=viewerOptions[key]and Color3.fromRGB(29,55,44)or C.PANEL viewerUpdate()end)end
+viewerButton.MouseButton1Click:Connect(function()viewerOpen=true viewerPanel.Visible=true viewerUpdate()end)
+viewerClose.MouseButton1Click:Connect(function()viewerOpen=false viewerPanel.Visible=false viewerClear()end)
+local viewerElapsed=0
+local viewerConn=R.Heartbeat:Connect(function(dt)viewerElapsed+=dt if viewerElapsed>=.25 then viewerElapsed=0 viewerUpdate()end end)
+local giftRecipientIndex=1
+local giftReadyAt={}
+local function giftVisual(enabled,state)
+ giftLabel.Text="REGALOS SCHOOLBAG  ·  "..(state or(enabled and"ON"or"OFF"))
+ giftLabel.TextColor3=enabled and C.WHITE or C.GREY
+ giftButton.BackgroundColor3=enabled and Color3.fromRGB(8,54,37)or C.PANEL
+ giftStroke.Color=enabled and C.PURPLE or C.STROKE
+ giftSwitch.BackgroundColor3=enabled and Color3.fromRGB(0,166,91)or Color3.fromRGB(35,48,43)
+ T:Create(giftKnob,TweenInfo.new(.16),{Position=enabled and UDim2.new(0,27,.5,-9)or UDim2.new(0,3,.5,-9),BackgroundColor3=enabled and C.WHITE or C.GREY}):Play()
+end
+local function giftStop()
+ giftEnabled=false giftToken+=1 giftVisual(false,"OFF")
+end
+local function giftSelectedPlayers()
+ local result={}
+ for _,candidate in ipairs(P:GetPlayers())do if candidate~=pl and selectedPlayerIds[candidate.UserId]then result[#result+1]=candidate end end
+ return result
+end
+local function giftCountSchoolBag()
+ local count=0 local backpack=pl:FindFirstChildOfClass("Backpack")
+ for _,container in ipairs({backpack,pl.Character})do if container then for _,item in ipairs(container:GetChildren())do if item:IsA("Tool")and item.Name=="SchoolBag"then count+=1 end end end end
+ return count
+end
+local function giftStart()
+ local recipients=giftSelectedPlayers()
+ if #recipients==0 then return false,"selecciona al menos un jugador"end
+ local replicated=game:GetService("ReplicatedStorage")local remotes=replicated:FindFirstChild("Remotes")
+ local equipRF=remotes and remotes:FindFirstChild("EquipToolRF")local giftRE=remotes and remotes:FindFirstChild("InteractGiftRE")
+ if not equipRF or not giftRE then return false,"remotos de regalos no disponibles"end
+ giftToken+=1 local token=giftToken giftEnabled=true giftVisual(true,"ON")
+ task.spawn(function()
+  local lastRequest=-math.huge
+  while giftEnabled and giftToken==token and not closing do
+   recipients=giftSelectedPlayers()
+   if #recipients==0 then giftVisual(true,"ESPERANDO JUGADORES")task.wait(.15)continue end
+   if giftRecipientIndex>#recipients then giftRecipientIndex=1 end
+   local recipient=nil
+   for _=1,#recipients do local candidate=recipients[giftRecipientIndex]giftRecipientIndex=giftRecipientIndex%#recipients+1 if candidate and candidate.Parent==P and os.clock()>=(giftReadyAt[candidate.UserId]or 0)then recipient=candidate break end end
+   if not recipient then giftVisual(true,"ESPERANDO")task.wait(.1)continue end
+   if giftCountSchoolBag()==0 then
+    giftVisual(true,"OBTENIENDO SCHOOLBAG")
+    local ok,result=pcall(function()return equipRF:InvokeServer("SchoolBag")end)
+    if not giftEnabled or giftToken~=token then break end
+    if not ok then giftVisual(true,"ERROR AL OBTENER")task.wait(.4)continue end
+    if result==false then task.wait(.05)continue end
+    local deadline=os.clock()+4
+    while giftEnabled and giftToken==token and giftCountSchoolBag()==0 and os.clock()<deadline do task.wait(.05)end
+    if giftCountSchoolBag()==0 then task.wait(.05)continue end
+   end
+   local gap=.15-(os.clock()-lastRequest)if gap>0 then task.wait(gap)end
+   if not giftEnabled or giftToken~=token or recipient.Parent~=P then continue end
+   giftVisual(true,"ENVIANDO A @"..recipient.Name)
+   pcall(function()giftRE:FireServer({Action="GiveGift",TargetUserId=recipient.UserId,ToolId="SchoolBag",GiftBox="GiftBox5"})end)
+   lastRequest=os.clock()giftReadyAt[recipient.UserId]=lastRequest+4.25
+   task.wait()
+  end
+  if giftToken==token then giftStop()end
+ end)
+ return true
+end
 local confirmShade=Instance.new("Frame")confirmShade.Size=UDim2.new(1,0,1,0)confirmShade.BackgroundColor3=Color3.fromRGB(0,0,0)confirmShade.BackgroundTransparency=0.2 confirmShade.BorderSizePixel=0 confirmShade.Active=true confirmShade.Visible=false confirmShade.ZIndex=300 confirmShade.Parent=mf
 local confirmBox=Instance.new("Frame")confirmBox.Size=UDim2.new(0,300,0,150)confirmBox.Position=UDim2.new(0.5,-150,0.5,-75)confirmBox.BackgroundColor3=C.PANEL confirmBox.BorderSizePixel=0 confirmBox.ZIndex=301 confirmBox.Parent=confirmShade mc(10,confirmBox)ms(C.PURPLE,2,confirmBox)
 local confirmTitle=Instance.new("TextLabel")confirmTitle.Size=UDim2.new(1,-24,0,58)confirmTitle.Position=UDim2.new(0,12,0,12)confirmTitle.BackgroundTransparency=1 confirmTitle.Text="¿ESTÁS SEGURO?\nSe detendrán y limpiarán todos los flujos."confirmTitle.TextWrapped=true confirmTitle.TextColor3=C.WHITE confirmTitle.TextSize=14 confirmTitle.Font=Enum.Font.GothamBold confirmTitle.ZIndex=302 confirmTitle.Parent=confirmBox
@@ -582,71 +810,71 @@ local function ss(t)
  if t=="idle"then sl.Text="   ●  LISTO"sl.TextColor3=Color3.fromRGB(116,207,162)
  else sl.Text="   ●  "..string.upper(tostring(t))sl.TextColor3=C.GREY end
 end
-local function _0xc5(target,runToken,itemName,targetCharacter,cycleValid)
+local function placeBalloonForTarget(target,runToken,itemName,targetCharacter,cycleValid)
  local function valid()
-  return cE and runToken==cToken and target==selectedTarget()and target[_0xc0[2]]==P and target[_0xc0[1]]==targetCharacter and cycleValid()
+  return cE and runToken==cToken and target==selectedTarget()and target.Parent==P and target.Character==targetCharacter and cycleValid()
  end
  while valid()do
   while valid()do
    local character=gc()
-   local root=character and _0xc1(character,5,_0xc0[3])
-   local targetRoot=targetCharacter and _0xc1(targetCharacter,5,_0xc0[3])
+   local root=character and character:FindFirstChild("HumanoidRootPart")
+   local targetRoot=targetCharacter and targetCharacter:FindFirstChild("HumanoidRootPart")
    if not root or not targetRoot then return false,"objetivo no disponible"end
-   if(root[_0xc0[12]]-targetRoot[_0xc0[12]]).Magnitude<=math.max(12,cinturaDepth+1)then break end
+   if(root.Position-targetRoot.Position).Magnitude<=math.max(.5,cinturaDepth+.5)then break end
    R.Heartbeat:Wait()
   end
   if not valid()then return false,"cancelado"end
-  local remotes=_0xc1(game:GetService(_0xc0[19]),5,_0xc0[14])
-  local equipRemote=remotes and _0xc1(remotes,5,_0xc0[15])
-  if not equipRemote or not _0xc1(equipRemote,29,_0xc0[16])then ss("conexión para equipar no disponible")return false,"conexión no disponible"end
+  local remotes=game:GetService("ReplicatedStorage"):FindFirstChild("Remotes")
+  local equipRemote=remotes and remotes:FindFirstChild("EquipToolRF")
+  if not equipRemote or not equipRemote:IsA("RemoteFunction")then ss("conexión para equipar no disponible")return false,"conexión no disponible"end
   ss("solicitando "..itemName.." para "..target.Name.."...")
-  local ok,result=pcall(function()return _0xc1(equipRemote,20,itemName)end)
+  local ok,result=pcall(function()return equipRemote:InvokeServer(itemName)end)
   if not ok or result==false then ss("reintentando "..itemName.."...")task.wait(.5)continue end
   local deadline=tick()+5
   local tool=nil
   while valid()and tick()<deadline do
    local character=gc()
-   local backpack=_0xc1(pl,6,_0xc0[13])
-   tool=(character and _0xc1(character,5,itemName))or(backpack and _0xc1(backpack,5,itemName))
-   if tool and _0xc1(tool,29,_0xc0[17])then
-    if tool[_0xc0[2]]~=character then
-     local humanoid=character and _0xc1(character,6,_0xc0[4])
+   local backpack=pl:FindFirstChildOfClass("Backpack")
+   tool=(character and character:FindFirstChild(itemName))or(backpack and backpack:FindFirstChild(itemName))
+   if tool and tool:IsA("Tool")then
+    if tool.Parent~=character then
+     local humanoid=character and character:FindFirstChildOfClass("Humanoid")
      if not humanoid then return false,"personaje no disponible"end
-     if not pcall(function()_0xc1(humanoid,18,tool)end)then tool=nil break end
+     if not pcall(function()humanoid:EquipTool(tool)end)then tool=nil break end
     end
-    if tool[_0xc0[2]]==character then break end
+    if tool.Parent==character then break end
    end
    R.Heartbeat:Wait()
   end
   if not valid()then return false,"cancelado"end
-  if not tool or tool[_0xc0[2]]~=gc()then ss("el globo no llegó; reintentando...")task.wait(.35)continue end
+  if not tool or tool.Parent~=gc()then ss("el globo no llegó; reintentando...")task.wait(.35)continue end
   ss("esperando colocación en "..target.Name.."...")
   while valid()do
    local character=gc()
-   local backpack=_0xc1(pl,6,_0xc0[13])
-   if tool[_0xc0[2]]~=character and tool[_0xc0[2]]~=backpack then ss("objeto colocado en "..target.Name)return true,"colocado"end
+   local backpack=pl:FindFirstChildOfClass("Backpack")
+   if tool.Parent~=character and tool.Parent~=backpack then ss("objeto colocado en "..target.Name)return true,"colocado"end
    R.Heartbeat:Wait()
   end
   return false,"cancelado"
  end
  return false,"cancelado"
 end
-local function _0xc6()
+local function removeEquippedBalloonBeforeReturn()
  local character=gc()
  if not character then return true end
- local tool=_0xc1(character,5,_0xc0[21])or _0xc1(character,5,_0xc0[22])
- if not tool or not _0xc1(tool,29,_0xc0[17])then return true end
- local remotes=_0xc1(game:GetService(_0xc0[19]),5,_0xc0[14])
- local clearRemote=remotes and _0xc1(remotes,5,_0xc0[23])
- if not clearRemote or not _0xc1(clearRemote,29,_0xc0[24])then ss("conexión de limpieza no disponible")return false end
+ local tool=character:FindFirstChild("ValentineBalloon")or character:FindFirstChild("NewYearBalloon")
+ if not tool or not tool:IsA("Tool")then return true end
+ local remotes=game:GetService("ReplicatedStorage"):FindFirstChild("Remotes")
+ local clearRemote=remotes and remotes:FindFirstChild("ClearToolRE")
+ if not clearRemote or not clearRemote:IsA("RemoteEvent")then ss("conexión de limpieza no disponible")return false end
  ss("retirando globo antes de regresar...")
  for attempt=1,3 do
-  if not tool[_0xc0[2]]then return true end
-  local ok=pcall(function()_0xc1(clearRemote,25,true)end)
+  if not tool.Parent then return true end
+  local ok=pcall(function()clearRemote:FireServer(true)end)
   if not ok then return false end
   local deadline=tick()+1.5
-  while tool[_0xc0[2]]and tick()<deadline do R.Heartbeat:Wait()end
-  if not tool[_0xc0[2]]then ss("globo retirado")return true end
+  while tool.Parent and tick()<deadline do R.Heartbeat:Wait()end
+  if not tool.Parent then ss("globo retirado")return true end
   if attempt<3 then task.wait(.25)end
  end
  ss("no se confirmó la retirada del globo")
@@ -950,65 +1178,46 @@ local function stopSit()
 sE=false if sC then sC:Disconnect()sC=nil end mt={}ss("idle")nt("SIT KILL","inactivo",2)
 end
 
-local _0x30=(function(a)local b={}for c=1,#a do b[c]=_0x2d(a[c])end return b end)({
-{109,66,69,79,109,66,89,88,95,104,67,66,71,79},{109,66,69,79,109,66,89,88,95,104,67,66,71,79,100,77,104,71,74,88,88},
-{108,78,95,111,78,88,72,78,69,79,74,69,95,88},{98,88,106},{120,78,95,101,78,95,92,68,89,64,100,92,69,78,89},{102,68,93,78},
-{104,67,74,89,74,72,95,78,89},{123,74,89,78,69,95},{123,68,88,66,95,66,68,69},{104,109,89,74,70,78},
-{123,71,74,95,77,68,89,70,120,95,74,69,79},{104,74,69,104,68,71,71,66,79,78},{102,74,88,88,71,78,88,88},{106,69,72,67,68,89,78,79},{120,66,95},
-{99,94,70,74,69,68,66,79,121,68,68,95,123,74,89,95},{99,94,70,74,69,68,66,79},{105,74,88,78,123,74,89,95},
-{106,88,88,78,70,73,71,82,103,66,69,78,74,89,125,78,71,68,72,66,95,82},{106,88,88,78,70,73,71,82,106,69,76,94,71,74,89,125,78,71,68,72,66,95,82}
-})
-local function _0x31(a,b,...)return a[_0x30[b]](a,...)end
 local function startFollow(tp,runToken,character,root,origin)
  stopFollow()
- if not cE or not runToken or runToken~=cToken or not root or not root[_0x30[8]]then return false end
+ if not cE or not runToken or runToken~=cToken or not root or not root.Parent then return false end
  followActive=true
  followOrigin=origin
  followConn=R.Heartbeat:Connect(function()
-  if closing or not cE or runToken~=cToken or tp~=selectedTarget() or character~=gc() or not root[_0x30[8]]then
+  if closing or not cE or runToken~=cToken or tp~=selectedTarget() or character~=gc() or not root.Parent then
    stopFollow()
    return
   end
-  local targetChar=tp[_0x30[7]]
-  local targetRoot=targetChar and _0x31(targetChar,1,_0x30[16])
-  if not targetRoot or not targetRoot[_0x30[8]] or not targetChar[_0x30[8]] then
+  local targetChar=tp.Character
+  local targetRoot=targetChar and targetChar:FindFirstChild("HumanoidRootPart")
+  if not targetRoot or not targetRoot.Parent or not targetChar.Parent then
    stopFollow()
     ss("objetivo sin HRP: esperando reaparición...")
    return
   end
-  local desired=targetRoot[_0x30[9]]-Vector3.new(0,cinturaDepth,0)
-  root[_0x30[10]]=CFrame.new(desired)*CFrame.Angles(-math.pi/2,0,0)
-  root[_0x30[19]]=Vector3.zero
-  root[_0x30[20]]=Vector3.zero
+  local desired=targetRoot.Position-Vector3.new(0,cinturaDepth,0)
+  root.CFrame=CFrame.new(desired)*CFrame.Angles(-math.pi/2,0,0)
+  root.AssemblyLinearVelocity=Vector3.zero
+  root.AssemblyAngularVelocity=Vector3.zero
  end)
  return true
 end
-local _0x4e=(function(a)local b={}for c=1,#a do b[c]=_0x2d(a[c])end return b end)({
- {104,98,101,127,126,121,106},{121,100,127,106,104,98,100,101},
- {106,88,88,78,70,73,71,82,103,66,69,78,74,89,125,78,71,68,72,66,95,82},
- {106,88,88,78,70,73,71,82,106,69,76,94,71,74,89,125,78,71,68,72,66,95,82},
- {123,67,82,88,66,72,88,121,78,91,121,68,68,95,123,74,89,95},
- {102,68,93,78,111,66,89,78,72,95,66,68,69,98,69,95,78,89,69,74,71},
- {99,94,70,74,69,68,66,79,121,68,68,95,123,74,89,95},
- {99,94,70,74,69,68,66,79},{105,74,88,78,123,74,89,95}
-})
-local function _0x56(a,b,c)return Vector3.new(a,b,c)end
-local function _0x4f(a,b,c)pcall(function()sethiddenproperty(a,b,c)end)end
-local function fling(tp,runToken)
+local function fling(tp,fromTouch,runToken)
 if not tp or tp==pl or tp~=selectedTarget()then return end
 if AF[tp]then return end
-local ch=gc()local trc=tp[_0x30[7]]if not ch or not trc then return end
-local hrp=_0x31(ch,1,_0x4e[7])local hum=_0x31(ch,2,_0x4e[8])local thrp=_0x31(trc,1,_0x4e[7])local thum=_0x31(trc,2,_0x4e[8])
+if fromTouch and tCd[tp]then if tick()-tCd[tp]<C.TOUCH_COOLDOWN then return end end
+local ch=gc()local trc=tp.Character if not ch or not trc then return end
+local hrp=ch:FindFirstChild("HumanoidRootPart")local hum=ch:FindFirstChildOfClass("Humanoid")local thrp=trc:FindFirstChild("HumanoidRootPart")local thum=trc:FindFirstChildOfClass("Humanoid")
 if not hrp or not hum or not thrp then return end
-AF[tp]=true
-local savedPos=hrp[_0x30[10]]
+AF[tp]=true if fromTouch then tCd[tp]=tick()end
+local savedPos=hrp.CFrame
 ss("fling "..tp.Name.." ["..modo.."]")nt("NaN "..modo,tp.Name,2)
-hum[_0x30[11]]=true
-for _,v in ipairs(_0x31(ch,3))do if _0x31(v,4,_0x4e[9])then v[_0x30[12]]=false v[_0x30[13]]=true end end
-hrp[_0x30[12]]=true
-for _,v in ipairs(_0x31(trc,3))do if _0x31(v,4,_0x4e[9])then pcall(function()_0x31(v,5,pl)end)end end
-local _0x6e=(function(a)return a-a end)(math.huge)
-local _0x7a=_0x56(_0x6e,_0x6e,_0x6e)
+hum.PlatformStand=true
+for _,v in ipairs(ch:GetDescendants())do if v:IsA("BasePart")then v.CanCollide=false v.Massless=true end end
+hrp.CanCollide=true
+for _,v in ipairs(trc:GetDescendants())do if v:IsA("BasePart")then pcall(function()v:SetNetworkOwner(pl)end)end end
+local NaN=0/0
+local NaNVec=Vector3.new(NaN,NaN,NaN)
 local st=tick()
 local steps=0
 local cn
@@ -1016,52 +1225,68 @@ cn=R.Heartbeat:Connect(function()
 steps=steps+1
 local elapsed=tick()-st
 local cycleDone=elapsed>=C.FLING_DURATION
-if closing or cycleDone or not ch[_0x30[8]]or not trc[_0x30[8]]or tp~=selectedTarget()or tp[_0x30[7]]~=trc or(runToken and(not cE or runToken~=cToken))then
+if closing or cycleDone or(fromTouch and not tE)or not ch.Parent or not trc.Parent or tp~=selectedTarget()or tp.Character~=trc or(runToken and(not cE or runToken~=cToken))then
 cn:Disconnect()AF[tp]=nil
-if cycleDone and modo==_0x4e[1] and runToken and cE and runToken==cToken and not closing and tp==selectedTarget() and trc[_0x30[8]]and ch[_0x30[8]]then
- _0x4f(hrp,_0x4e[5],nil)
- _0x4f(hum,_0x4e[6],Vector3.zero)
- if hum then hum[_0x30[11]]=false end
- for _,v in ipairs(_0x31(ch,3))do
-  if _0x31(v,4,_0x4e[9])then v[_0x30[12]]=true v[_0x30[13]]=false end
+if cycleDone and modo=="CINTURA" and runToken and cE and runToken==cToken and not closing and tp==selectedTarget() and trc.Parent and ch.Parent then
+ pcall(function()sethiddenproperty(hrp,"PhysicsRepRootPart",nil)end)
+ pcall(function()sethiddenproperty(hum,"MoveDirectionInternal",Vector3.zero)end)
+ if hum then hum.PlatformStand=false end
+ for _,v in ipairs(ch:GetDescendants())do
+  if v:IsA("BasePart")then v.CanCollide=true v.Massless=false end
  end
  if startFollow(tp,runToken,ch,hrp,savedPos) then
   ss("ancla seguidora: "..cinturaDepth.." studs")
   return
  end
 end
-if hrp and hrp[_0x30[8]]then hrp[_0x30[14]]=true end
-for _,v in ipairs(_0x31(ch,3))do
-if _0x31(v,4,_0x4e[9])then
-v[_0x30[12]]=true
-v[_0x30[13]]=false
+if hrp and hrp.Parent then hrp.Anchored=true end
+for _,v in ipairs(ch:GetDescendants())do
+if v:IsA("BasePart")then
+v.CanCollide=true
+v.Massless=false
 v.AssemblyLinearVelocity=Vector3.zero
 v.AssemblyAngularVelocity=Vector3.zero
 end
 end
-if hum then hum[_0x30[11]]=false end
-_0x4f(hrp,_0x4e[5],nil)
+if hum then hum.PlatformStand=false end
+pcall(function()sethiddenproperty(hrp,"PhysicsRepRootPart",nil)end)
 task.wait(0.2)
-if hrp and hrp[_0x30[8]]and savedPos then hrp[_0x30[10]]=savedPos end
+if hrp and hrp.Parent and savedPos then hrp.CFrame=savedPos end
 task.wait(0.2)
-if hrp and hrp[_0x30[8]]then hrp[_0x4e[3]]=Vector3.zero hrp[_0x4e[4]]=Vector3.zero end
-pcall(function()_0x31(hrp,5,pl)end)
+if hrp and hrp.Parent then hrp.AssemblyLinearVelocity=Vector3.zero hrp.AssemblyAngularVelocity=Vector3.zero end
+pcall(function()hrp:SetNetworkOwner(pl)end)
 task.wait(0.1)
-if hrp and hrp[_0x30[8]]then hrp[_0x30[14]]=false end
+if hrp and hrp.Parent then hrp.Anchored=false end
 task.wait(0.05)
-if hrp and hrp[_0x30[8]]then hrp[_0x4e[3]]=Vector3.zero hrp[_0x4e[4]]=Vector3.zero end
+if hrp and hrp.Parent then hrp.AssemblyLinearVelocity=Vector3.zero hrp.AssemblyAngularVelocity=Vector3.zero end
 ss("idle")
 return
 end
-local _0xa={}
-_0xa[11]=function()hrp[_0x30[10]]=CFrame.new(thrp[_0x30[9]]-Vector3.new(0,cinturaDepth,0))*CFrame.Angles(-math.pi/2,0,0)hrp[_0x4e[3]]=_0x7a hrp[_0x4e[4]]=_0x7a if thum then pcall(function()_0x31(thum,6,_0x7a)end)_0x4f(thum,_0x4e[6],_0x7a)end _0x4f(hum,_0x4e[6],_0x7a)end
-_0xa[23]=function()hrp[_0x30[10]]=CFrame.new(thrp[_0x30[9]])*CFrame.Angles(math.random(-180,180)*math.pi/180,math.random(-180,180)*math.pi/180,math.random(-180,180)*math.pi/180)hrp[_0x4e[3]]=_0x56(math.random(-20000,20000),math.random(-20000,20000),math.random(-20000,20000))hrp[_0x4e[4]]=_0x56(math.random(100000,200000),math.random(100000,200000),math.random(100000,200000))end
-_0xa[37]=function()hrp[_0x30[10]]=CFrame.new(thrp[_0x30[9]]+Vector3.new(0,1,0))hrp[_0x4e[3]]=_0x7a hrp[_0x4e[4]]=_0x7a if thum then pcall(function()_0x31(thum,6,_0x7a)end)end end
-(_0xa[modo==_0x4e[1]and 11 or modo==_0x4e[2]and 23 or 37])()
-_0x4f(hrp,_0x4e[5],thrp)
+if modo=="CINTURA" then
+hrp.CFrame=CFrame.new(thrp.Position-Vector3.new(0,cinturaDepth,0))*CFrame.Angles(-math.pi/2,0,0)
+hrp.AssemblyLinearVelocity=NaNVec
+hrp.AssemblyAngularVelocity=NaNVec
 if thum then
-if thum[_0x30[15]]then thum[_0x30[15]]=false end
-if thum[_0x30[11]]==false then thum[_0x30[11]]=true end
+pcall(function()thum:Move(NaNVec)end)
+pcall(function()sethiddenproperty(thum,"MoveDirectionInternal",NaNVec)end)
+end
+pcall(function()sethiddenproperty(hum,"MoveDirectionInternal",NaNVec)end)
+elseif modo=="ROTACION" then
+hrp.CFrame=CFrame.new(thrp.Position)*CFrame.Angles(math.random(-180,180)*math.pi/180,math.random(-180,180)*math.pi/180,math.random(-180,180)*math.pi/180)
+hrp.AssemblyLinearVelocity=Vector3.new(math.random(-20000,20000),math.random(-20000,20000),math.random(-20000,20000))
+hrp.AssemblyAngularVelocity=Vector3.new(math.random(100000,200000),math.random(100000,200000),math.random(100000,200000))
+else
+hrp.CFrame=CFrame.new(thrp.Position+Vector3.new(0,1,0))*CFrame.Angles(0,0,0)
+hrp.AssemblyLinearVelocity=NaNVec
+hrp.AssemblyAngularVelocity=NaNVec
+if thum then
+pcall(function()thum:Move(NaNVec)end)
+end
+end
+pcall(function()sethiddenproperty(hrp,"PhysicsRepRootPart",thrp)end)
+if thum then
+if thum.Sit then thum.Sit=false end
+if thum.PlatformStand==false then thum.PlatformStand=true end
 end
 end)
 end
@@ -1093,8 +1318,11 @@ if cE then
  cToken=cToken+1
  setContinuousState(false)
  activeTarget=nil
-_0xc2()
+stopTargetPerspective()
 stopFollow()
+local returnNow=activeReturnToOrigin
+if returnNow then task.spawn(returnNow)end
+tE=false
 if sE then stopSit()end sS(false)sTog.Text="SIT KILL: INACTIVO"
 ss("parando...")
 nt("NaN FLING","parando ciclo",2)
@@ -1112,6 +1340,30 @@ if not startRoot or not startHumanoid then nt("ERROR","personaje no disponible")
 local origin=startRoot.CFrame
 local originalPlatformStand=startHumanoid.PlatformStand
 local originalRootAnchored=startRoot.Anchored
+local returningToOrigin=false
+local function restoreActivationOrigin()
+ if returningToOrigin then return end
+ local currentCharacter=gc()
+ local currentRoot=currentCharacter and currentCharacter:FindFirstChild("HumanoidRootPart")
+ if not currentRoot or not currentRoot.Parent then return end
+ returningToOrigin=true
+ local wasAnchored=currentRoot.Anchored
+ pcall(function()
+  currentRoot.Anchored=true
+  currentRoot.AssemblyLinearVelocity=Vector3.zero
+  currentRoot.AssemblyAngularVelocity=Vector3.zero
+  currentRoot.CFrame=origin
+ end)
+ R.Heartbeat:Wait()
+ pcall(function()
+  currentRoot.CFrame=origin
+  currentRoot.AssemblyLinearVelocity=Vector3.zero
+  currentRoot.AssemblyAngularVelocity=Vector3.zero
+  currentRoot.Anchored=currentRoot==startRoot and originalRootAnchored or wasAnchored
+ end)
+ returningToOrigin=false
+end
+activeReturnToOrigin=restoreActivationOrigin
 local originalPartState={}
 for _,part in ipairs(startCharacter:GetDescendants())do
 if part:IsA("BasePart")then originalPartState[part]={part.CanCollide,part.Massless}end
@@ -1121,7 +1373,7 @@ setContinuousState(true)
 task.spawn(function()
  local targetIndex=1
  local function waitAtActivationPoint()
-  _0xc2()
+  stopTargetPerspective()
   stopFollow()
   if startRoot and startRoot.Parent and startCharacter==gc()then
    startRoot.Anchored=true
@@ -1154,7 +1406,7 @@ task.spawn(function()
   end
   if not targetCharacter or not targetCharacter.Parent or not targetRootAtStart or not targetRootAtStart.Parent then waitAtActivationPoint()end
   while cE and myToken==cToken and selectedPlayerIds[target.UserId]and target.Parent==P and(not targetCharacter or not targetCharacter.Parent or not targetRootAtStart or not targetRootAtStart.Parent)do
-  _0xc2()
+  stopTargetPerspective()
   stopFollow()
    ss("esperando que reaparezca "..target.Name.."...")
   task.wait(.1)
@@ -1165,7 +1417,7 @@ task.spawn(function()
   if target.Parent~=P or not selectedPlayerIds[target.UserId]then targetIndex=targetIndex+1 continue end
  local cycleLost=false
   local placementDone=false
- _0xc3(target)
+ startTargetPerspective(target)
  local targetMonitor=R.Heartbeat:Connect(function()
   if not cE or myToken~=cToken then return end
    if target.Parent~=P or not selectedPlayerIds[target.UserId]or target.Character~=targetCharacter or not targetCharacter.Parent or not targetRootAtStart.Parent or targetCharacter:FindFirstChild("HumanoidRootPart")~=targetRootAtStart then
@@ -1175,14 +1427,14 @@ task.spawn(function()
   end
  end)
   task.spawn(function()
-   local placed=_0xc5(target,myToken,balloonChoice,targetCharacter,function()return not cycleLost and skipTargetVersion==targetSkipVersion end)
+   local placed=placeBalloonForTarget(target,myToken,balloonChoice,targetCharacter,function()return not cycleLost and skipTargetVersion==targetSkipVersion end)
    if placed then placementDone=true end
   end)
   while cE and myToken==cToken and skipTargetVersion==targetSkipVersion and not cycleLost and not placementDone and target==selectedTarget()and target.Parent==P do
   if followActive then
    task.wait(0.05)
   else
-    task.spawn(function()fling(target,myToken)end)
+    task.spawn(function()fling(target,false,myToken)end)
     R.Heartbeat:Wait()
     local deadline=tick()+C.FLING_DURATION+1
    repeat task.wait(0.05)until skipTargetVersion~=targetSkipVersion or placementDone or not AF[target]or tick()>=deadline or cycleLost or not cE or myToken~=cToken or target~=selectedTarget()or target.Parent~=P
@@ -1193,9 +1445,9 @@ task.spawn(function()
  cCleaning=true
   local skipped=skipTargetVersion~=targetSkipVersion
  if targetMonitor then targetMonitor:Disconnect()targetMonitor=nil end
- _0xc2()
+ stopTargetPerspective()
  stopFollow()
-  if not placementDone then _0xc6()end
+  if not placementDone then removeEquippedBalloonBeforeReturn()end
   ss(placementDone and "cambiando de objetivo..."or"limpiando y regresando...")
   if placementDone then
    task.wait(.05)
@@ -1223,7 +1475,7 @@ task.spawn(function()
    pcall(function()startHumanoid:Move(Vector3.zero)end)
    pcall(function()sethiddenproperty(startHumanoid,"MoveDirectionInternal",Vector3.zero)end)
   end
-   if not placementDone then startRoot.CFrame=origin end
+   if not placementDone or not cE or myToken~=cToken then startRoot.CFrame=origin end
   R.Heartbeat:Wait()
   startRoot.AssemblyLinearVelocity=Vector3.zero
   startRoot.AssemblyAngularVelocity=Vector3.zero
@@ -1242,7 +1494,9 @@ task.spawn(function()
 end
 cCleaning=false
  activeTarget=nil
-_0xc2()
+stopTargetPerspective()
+restoreActivationOrigin()
+if activeReturnToOrigin==restoreActivationOrigin then activeReturnToOrigin=nil end
 if myToken==cToken then setContinuousState(false)end
 ss("idle")
 end)
@@ -1256,9 +1510,13 @@ ss("omitiendo objetivo actual...")
 nt("SIGUIENTE OBJETIVO","avanzando al siguiente seleccionado",2)
 end)
 stopB.MouseButton1Click:Connect(function()
-_0xc2()
+stopTargetPerspective()
+giftStop()
 cToken=cToken+1 setContinuousState(false)
 stopFollow()
+local returnNow=activeReturnToOrigin
+if returnNow then task.spawn(returnNow)end
+tE=false
 if sE then stopSit()end sS(false)sTog.Text="SIT KILL: INACTIVO"
 ss("deteniendo y restaurando...")nt("DETENER","flujos cancelados",2)
 end)
@@ -1271,10 +1529,16 @@ end)
 confirmYes.MouseButton1Click:Connect(function()
 if closing then return end
 closing=true
-_0xc2()
+stopTargetPerspective()
+giftStop()
+viewerOpen=false viewerClear()
+if viewerConn then viewerConn:Disconnect()viewerConn=nil end
 confirmYes.Text="CERRANDO..."confirmNo.Active=false
 cToken=cToken+1 cE=false
 stopFollow()
+local returnNow=activeReturnToOrigin
+if returnNow then task.spawn(returnNow)end
+tE=false
 if sE then stopSit()end
 clearDeathTracking()
 flB.Text="ACTIVAR"flB.TextColor3=C.GREEN flB.BackgroundColor3=Color3.fromRGB(5,52,34)flBStroke.Color=Color3.fromRGB(0,180,96)flBStroke.Thickness=1
@@ -1285,6 +1549,10 @@ if dragInputConn then dragInputConn:Disconnect()dragInputConn=nil end
 if keyInputConn then keyInputConn:Disconnect()keyInputConn=nil end
 if sg and sg.Parent then sg:Destroy()end
 end)
+end)
+giftButton.MouseButton1Click:Connect(function()
+if giftEnabled then giftStop()nt("REGALOS SCHOOLBAG","desactivado",2)
+else local ok,message=giftStart()if ok then nt("REGALOS SCHOOLBAG","envío continuo activado",2)else giftVisual(false,"OFF")nt("REGALOS SCHOOLBAG",message or"no se pudo activar",3)end end
 end)
 modoBtn.MouseButton1Click:Connect(function()
 if modo=="CINTURA"then modo="ROTACION"modoBtn.Text="MODO: ROTACION"
@@ -1307,5 +1575,5 @@ else
 minimizar()
 end
 end end)end
-task.wait(0.5)nt("CARGADO",_0x92,3)ss("idle")
-print(_0x93)
+task.wait(0.5)nt("CARGADO","NaN Personalizado by Psychoo",3)ss("idle")
+print("[NaN Personalizado] Cintura + Rotación + Clásico + Efecto sentado + Contador de reinicios")
